@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class PlayerInventory : MonoBehaviour
 {
-    public GameObject Container;
     public GameObject CivilianPrefab;
     private List<InventoryCivilianBehaviour> CivilianBehaviours;
 
@@ -17,7 +16,7 @@ public class PlayerInventory : MonoBehaviour
     {
         for (int i = 0; i < civiliansCount; i++)
         {
-            GameObject civilianObj = Instantiate(CivilianPrefab, Container.transform);
+            GameObject civilianObj = Instantiate(CivilianPrefab, transform);
             InventoryCivilianBehaviour behaviour = civilianObj.GetComponent<InventoryCivilianBehaviour>();
             CivilianBehaviours.Add(behaviour);
         }
