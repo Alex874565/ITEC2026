@@ -1,15 +1,15 @@
 using UnityEngine;
 using DG.Tweening;
-using TMPro;
 
 public class TitleAnimation : MonoBehaviour
 {
-    [SerializeField] private CanvasGroup canvasGroup; // assign in inspector
+    [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] private float duration = 1f; // animation duration
+    [SerializeField] private Ease ease = Ease.OutBack;
+
     private Vector3 originalScale;
 
-    [Header("Animation Settings")]
-    [SerializeField] private float duration = 1f;
-    [SerializeField] private Ease ease = Ease.OutBack;
+    public float Duration => duration; // <-- add this line
 
     private void Awake()
     {
@@ -18,24 +18,19 @@ public class TitleAnimation : MonoBehaviour
 
         originalScale = transform.localScale;
 
-        // Start hidden
         canvasGroup.alpha = 0f;
         transform.localScale = Vector3.zero;
     }
 
-    public void ShowTitle(float delay = 0f)
+    public void Show(float delay = 0f)
     {
-        // Fade in
         canvasGroup.DOFade(1f, duration).SetDelay(delay);
-        // Scale up
         transform.DOScale(originalScale, duration).SetEase(ease).SetDelay(delay);
     }
 
-    public void HideTitle(float delay = 0f)
+    public void Hide(float delay = 0f)
     {
-        // Fade out
         canvasGroup.DOFade(0f, duration).SetDelay(delay);
-        // Scale down
         transform.DOScale(Vector3.zero, duration).SetEase(Ease.InBack).SetDelay(delay);
     }
 }

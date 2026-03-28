@@ -20,11 +20,11 @@ public class MainMenuUI : MonoBehaviour
             });
             
             // Hide title simultaneously
-            titleAnimation.HideTitle();
+            titleAnimation.Hide();
         });
         settingsButton.onClick.AddListener(() =>
         {
-            //SettingsUI.Instance.Show();
+            SettingsUI.Instance.Show();
         });
         quitButton.onClick.AddListener(() =>
         {
@@ -34,7 +34,7 @@ public class MainMenuUI : MonoBehaviour
                 Application.Quit();
             });
             
-            titleAnimation.HideTitle();
+            titleAnimation.Hide();
         });
     }
 

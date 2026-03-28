@@ -21,7 +21,7 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        titleAnimation.ShowTitle();
+        titleAnimation.Show();
         Invoke(nameof(SetDefaultButton), 0.01f);
     }
 
