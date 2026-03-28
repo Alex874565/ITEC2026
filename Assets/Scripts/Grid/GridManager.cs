@@ -8,6 +8,7 @@ public class GridManager : NetworkBehaviour
 
     [Header("Setup")]
     [SerializeField] private GameObject civilianPrefab;
+    [SerializeField] private GameObject placeholderPrefab;
 
     private Transform civilianContainer;
 
@@ -68,6 +69,21 @@ public class GridManager : NetworkBehaviour
             return;
 
         CiviliansTargetCount = newValue + 1;
+
+        for (int i = 0; i < CiviliansTargetCount; i++)
+        {
+            GameObject placeholder = Instantiate(placeholderPrefab, civilianContainer);
+            placeholder.name = $"Placeholder_{i}";
+
+            var netObj = placeholder.GetComponent<NetworkObject>();
+            netObj.Spawn();
+            netObj.TrySetParent(civilianContainer.GetComponent<NetworkObject>(), false);
+
+            var slot = placeholder.GetComponent<CivilianSlot>();
+            slot.SlotIndex.Value = i;
+
+            placeholder.transform.SetAsLastSibling();
+        }
     }
 
     public void RequestAddCivilian(InventoryCivilianBehaviour inventoryCivilian)
@@ -180,13 +196,18 @@ public class GridManager : NetworkBehaviour
             return;
         }
 
+        int scoreChange = 1;
         foreach (CivilianBehaviour existingCivilian in GetAllCivilians())
         {
             if (existingCivilian == null || existingCivilian == newCivilian)
                 continue;
 
-            existingCivilian.ReactToTrait(newCivilian.Trait);
-            newCivilian.ReactToTrait(existingCivilian.Trait);
+            scoreChange += existingCivilian.ReactToTrait(newCivilian.Trait);
+            scoreChange += newCivilian.ReactToTrait(existingCivilian.Trait);
+        }
+        if (IsServer && scoreChange != 0)
+        {
+            GameManager.Instance.Score.Value += scoreChange;
         }
     }
 
@@ -244,26 +265,79 @@ public class GridManager : NetworkBehaviour
 
         GameObject civilian = Instantiate(civilianPrefab);
         CivilianBehaviour behaviour = civilian.GetComponent<CivilianBehaviour>();
-        NetworkObject networkObject = civilian.GetComponent<NetworkObject>();
+        NetworkObject civilianNO = civilian.GetComponent<NetworkObject>();
 
         behaviour.Initialize(trait, likedTraits, dislikedTraits);
+        civilianNO.Spawn();
 
-        networkObject.Spawn();
-
-        if (civilianContainer != null)
+        var parentNO = civilianContainer.GetComponent<NetworkObject>();
+        if (parentNO == null)
         {
-            var parentNetworkObject = civilianContainer.GetComponent<NetworkObject>();
-            if (parentNetworkObject != null)
-            {
-                networkObject.TrySetParent(parentNetworkObject, false);
-            }
-            else
-            {
-                Debug.LogError("civilianContainer must have a spawned NetworkObject for synced parenting.");
-            }
+            Debug.LogError("civilianContainer must have a NetworkObject.");
+            return behaviour;
+        }
+
+        NetworkObject slotNO = GetNextAvailableSlot();
+        if (slotNO != null)
+        {
+            PlaceCivilianInSlot(civilianNO, slotNO);
+        }
+        else
+        {
+            civilianNO.TrySetParent(parentNO, false);
+            Debug.LogWarning("No available slot found.");
         }
 
         return behaviour;
+    }
+    
+    private NetworkObject GetNextAvailableSlot()
+    {
+        for (int i = 0; i < civilianContainer.childCount; i++)
+        {
+            Transform child = civilianContainer.GetChild(i);
+
+            CivilianSlot slot = child.GetComponent<CivilianSlot>();
+            if (slot != null)
+            {
+                NetworkObject no = child.GetComponent<NetworkObject>();
+                Debug.Log($"Found slot: {child.name}, IsSpawned={no != null && no.IsSpawned}");
+                return no;
+            }
+        }
+
+        return null;
+    }
+    
+    public void PlaceCivilianInSlot(NetworkObject civilianNO, NetworkObject slotNO)
+    {
+        if (!IsServer) return;
+
+        var parentNO = civilianContainer.GetComponent<NetworkObject>();
+        if (parentNO == null || civilianNO == null || slotNO == null) return;
+
+        CivilianSlot slot = slotNO.GetComponent<CivilianSlot>();
+        if (slot == null)
+        {
+            Debug.LogError("Slot object has no CivilianSlot.");
+            return;
+        }
+
+        int slotIndex = slot.SlotIndex.Value;
+
+        civilianNO.TrySetParent(parentNO, false);
+
+        CivilianBehaviour civilian = civilianNO.GetComponent<CivilianBehaviour>();
+        civilian.SlotIndex.Value = slotIndex;
+
+        civilianNO.transform.SetSiblingIndex(slotIndex);
+
+        slotNO.Despawn(true);
+        
+        if(GetAllCiviliansCount() >= CiviliansTargetCount)
+        {
+            GameManager.Instance.EndWave();
+        }
     }
 
     public List<NetworkObjectReference> GetTraitCivilians(Trait trait)

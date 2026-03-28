@@ -48,4 +48,12 @@ public class PlayerInventory : MonoBehaviour
             c.DestroySelf();
         }
     }
+
+    public void OnDisable()
+    {
+        foreach (InventoryCivilianBehaviour c in CivilianBehaviours)
+        {
+            c.OnCivilianClicked -= SelectCivilian;
+        }
+    }
 }

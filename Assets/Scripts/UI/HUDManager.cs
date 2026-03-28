@@ -5,6 +5,7 @@ using UnityEngine;
 public class HUDManager : MonoBehaviour
 {
     public TextMeshProUGUI TurnText;
+    public TextMeshProUGUI ScoreText;
 
     public PlayerBehaviour Player;
     

@@ -3,10 +3,18 @@ using Unity.Netcode;
 
 public class ModifiersManager : NetworkBehaviour
 {
+    public static ModifiersManager Instance { get; private set; }
     public NetworkList<TraitModifier> Modifiers;
 
     private void Awake()
     {
+        if(Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        
         Modifiers = new NetworkList<TraitModifier>();
     }
 

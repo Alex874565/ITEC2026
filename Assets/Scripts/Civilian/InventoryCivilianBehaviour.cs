@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 
-public class InventoryCivilianBehaviour : MonoBehaviour, IPointerClickHandler
+public class InventoryCivilianBehaviour : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public int Index;
     public CivilianUI CivilianUI;
@@ -50,6 +50,8 @@ public class InventoryCivilianBehaviour : MonoBehaviour, IPointerClickHandler
                 DislikedTraits.Add(randomTrait);
             }
         }
+        
+        CivilianUI.Initialize(Trait, LikedTraits.ToArray(), DislikedTraits.ToArray());
     }
     
     public void DestroySelf()
@@ -61,5 +63,16 @@ public class InventoryCivilianBehaviour : MonoBehaviour, IPointerClickHandler
     {
         GridManager.Instance.RequestAddCivilian(this);
         OnCivilianClicked?.Invoke(Index);
+        DestroySelf();
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        CivilianUI.ShowTooltip();
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        CivilianUI.HideTooltip();
     }
 }
