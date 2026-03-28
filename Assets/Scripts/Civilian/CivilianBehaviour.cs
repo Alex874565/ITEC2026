@@ -22,19 +22,53 @@ public class CivilianBehaviour : NetworkBehaviour
             CivillianUI.UpdateImage(newValue);
         };
     }
-    
-    public void ReactToTrait(TraitStruct trait)
+
+    public void Initialize(InventoryCivilianBehaviour inventoryCivilianBehaviour)
     {
-        if(!IsOwner) return;
+        Trait = new TraitStruct
+        {
+            Trait = inventoryCivilianBehaviour.Trait
+        };
+        
+        foreach (var trait in inventoryCivilianBehaviour.LikedTraits)
+        {
+            LikedTraits.Add(new TraitStruct
+            {
+                Trait = trait
+            });
+        }
+        
+        foreach (var trait in inventoryCivilianBehaviour.DislikedTraits)
+        {
+            DislikedTraits.Add(new TraitStruct
+            {
+                Trait = trait
+            });
+        }
+    }
+    
+    public int ReactToTrait(TraitStruct trait)
+    {
+        if (!IsOwner) return 0;
+
+        int change;
         
         if (LikedTraits.Contains(trait))
         {
-            UpdateHappiness(ModifiersManager.GetModifierDataForTrait(trait.Trait).Positive);
+            change = ModifiersManager.GetModifierDataForTrait(trait.Trait).Positive;
+            UpdateHappiness(change);
         }
         else if (DislikedTraits.Contains(trait))
         {
-            UpdateHappiness(ModifiersManager.GetModifierDataForTrait(trait.Trait).Negative);
+            change = ModifiersManager.GetModifierDataForTrait(trait.Trait).Negative;
+            UpdateHappiness(change);
         }
+        else
+        {
+            change = 0;
+        }
+
+        return change;
     }
     
     public void UpdateHappiness(int change)
