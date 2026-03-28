@@ -1,21 +1,52 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class CivilianUI : MonoBehaviour
 {
     public TraitSpritesDatabase Database;
     public Image Image;
     public Vector2 NeutralRange;
+    public GameObject Tooltip;
+    public List<TextMeshProUGUI> LikedTraitsContainers;
+    public List<TextMeshProUGUI> DislikedTraitsContainers;
 
     private Trait _trait;
     
     private TraitSprites _traitSprites;
     
-    public void Initialize(Trait trait)
+    public void Initialize(Trait trait, Trait[] likedTraits, Trait[] dislikedTraits)
     {
         _trait = trait;
-        _traitSprites = Database.TraitSpritesList.Find(x => x.Trait == _trait);
-        Image.sprite = _traitSprites.NeutralSprite;
+        //_traitSprites = Database.GetTraitSprites(trait);
+        
+        //UpdateImage(0);
+
+        for(int i = 0; i < LikedTraitsContainers.Count; i++)
+        {
+            if(i < likedTraits.Length)
+            {
+                LikedTraitsContainers[i].text = likedTraits[i].ToString();
+            }
+            else
+            {
+                LikedTraitsContainers[i].text = "";
+            }
+        }
+        
+        for(int i = 0; i < DislikedTraitsContainers.Count; i++)
+        {
+            if(i < dislikedTraits.Length)
+            {
+                DislikedTraitsContainers[i].text = dislikedTraits[i].ToString();
+            }
+            else
+            {
+                DislikedTraitsContainers[i].text = "";
+            }
+        }
+
     }
 
     public void UpdateImage(int traitValue)
@@ -32,5 +63,15 @@ public class CivilianUI : MonoBehaviour
         {
             Image.sprite = _traitSprites.NeutralSprite;
         }
+    }
+
+    public void ShowTooltip()
+    {
+        Tooltip.SetActive(true);
+    }
+
+    public void HideTooltip()
+    {
+        Tooltip.SetActive(false);
     }
 }

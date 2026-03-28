@@ -1,5 +1,4 @@
 ﻿using Unity.Netcode;
-using System;
 using UnityEngine;
 
 public class GameManager : NetworkBehaviour
@@ -12,6 +11,18 @@ public class GameManager : NetworkBehaviour
 
     public NetworkVariable<int> PlayerCount = new(0);
     public NetworkVariable<int> ActivePlayer = new(0);
+    public NetworkVariable<int> Score = new(0);
+
+    private NetworkVariable<int> RequiredScore = new(0);
+
+    [Header("Score Progression")]
+    [SerializeField] private AnimationCurve requiredScoreCurve = new AnimationCurve(
+        new Keyframe(1, 10),
+        new Keyframe(2, 20),
+        new Keyframe(3, 35),
+        new Keyframe(4, 55),
+        new Keyframe(5, 80)
+    );
 
     private void Awake()
     {
@@ -28,6 +39,9 @@ public class GameManager : NetworkBehaviour
     {
         GameStarted.OnValueChanged += ToggleUIs;
         CurrentWave.OnValueChanged += OnWaveStarted;
+        Score.OnValueChanged += UpdateScore;
+        RequiredScore.OnValueChanged += UpdateScore;
+
         if (IsServer)
         {
             NetworkManager.OnClientConnectedCallback += OnClientChanged;
@@ -39,13 +53,18 @@ public class GameManager : NetworkBehaviour
     {
         GameStarted.OnValueChanged -= ToggleUIs;
         CurrentWave.OnValueChanged -= OnWaveStarted;
+        Score.OnValueChanged -= UpdateScore;
+        RequiredScore.OnValueChanged -= UpdateScore;
 
-        if (IsServer){
+        if (IsServer)
+        {
             NetworkManager.OnClientConnectedCallback -= OnClientChanged;
             NetworkManager.OnClientDisconnectCallback -= OnClientChanged;
         }
+
+        EndGame();
     }
-    
+
     private void OnClientChanged(ulong clientId)
     {
         UpdatePlayerCount();
@@ -56,14 +75,34 @@ public class GameManager : NetworkBehaviour
         PlayerCount.Value = NetworkManager.Singleton.ConnectedClients.Count;
     }
 
+    private void UpdateScore(int oldValue, int newValue)
+    {
+        HUDManager hudManager = UIManager.Instance.HUD.GetComponent<HUDManager>();
+        hudManager.ScoreText.text = $"{Score.Value}/{RequiredScore.Value}";
+    }
+
+    private int GetRequiredScoreForWave(int wave)
+    {
+        return Mathf.RoundToInt(requiredScoreCurve.Evaluate(wave));
+    }
+
     public void StartGame()
     {
         if (!IsServer || !IsSpawned)
             return;
 
+        if (GridManager.Instance != null)
+            CurrentWave.OnValueChanged += GridManager.Instance.OnWaveStarted;
+
         GamePaused.Value = false;
         GameStarted.Value = true;
         CurrentWave.Value = 1;
+    }
+
+    public void EndGame()
+    {
+        if (GridManager.Instance != null)
+            CurrentWave.OnValueChanged -= GridManager.Instance.OnWaveStarted;
     }
 
     private void ToggleUIs(bool oldValue, bool newValue)
@@ -79,8 +118,15 @@ public class GameManager : NetworkBehaviour
     {
         if (!IsServer || !IsSpawned)
             return;
-        
+
         ActivePlayer.Value = 1;
+        Score.Value = 0;
+        RequiredScore.Value = GetRequiredScoreForWave(newValue);
+    }
+
+    public void EndWave()
+    {
+        
     }
 
     public void ChangeActivePlayer()

@@ -6,8 +6,11 @@ public class GridManager : NetworkBehaviour
 {
     public static GridManager Instance { get; private set; }
 
-    [Header("Setup")] [SerializeField] private GameObject civilianPrefab;
-    [SerializeField] private Transform civilianContainer;
+    [Header("Setup")]
+    [SerializeField] private GameObject civilianPrefab;
+    [SerializeField] private GameObject placeholderPrefab;
+
+    private Transform civilianContainer;
 
     public int CiviliansTargetCount;
 
@@ -26,19 +29,20 @@ public class GridManager : NetworkBehaviour
         }
 
         Instance = this;
+
+        var grid = FindFirstObjectByType<CiviliansGrid>(FindObjectsInactive.Include);
+        if (grid != null)
+            civilianContainer = grid.transform;
     }
 
     public override void OnNetworkSpawn()
     {
+        Debug.Log($"GridManager spawned | IsServer={IsServer} IsHost={IsHost} IsSpawned={IsSpawned}");
+
         ActiveTraitCivilians.OnValueChanged += OnActiveTraitCiviliansChanged;
 
         if (IsServer)
         {
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.CurrentWave.OnValueChanged += OnWaveStarted;
-            }
-
             var data = ActiveTraitCivilians.Value;
             if (data.TraitLists == null)
             {
@@ -52,11 +56,6 @@ public class GridManager : NetworkBehaviour
     public override void OnNetworkDespawn()
     {
         ActiveTraitCivilians.OnValueChanged -= OnActiveTraitCiviliansChanged;
-
-        if (IsServer && GameManager.Instance != null)
-        {
-            GameManager.Instance.CurrentWave.OnValueChanged -= OnWaveStarted;
-        }
     }
 
     private void OnActiveTraitCiviliansChanged(ActiveTraitCivilians oldValue, ActiveTraitCivilians newValue)
@@ -69,13 +68,65 @@ public class GridManager : NetworkBehaviour
         if (!IsServer)
             return;
 
-        CiviliansTargetCount = newValue;
+        CiviliansTargetCount = newValue + 1;
+
+        for (int i = 0; i < CiviliansTargetCount; i++)
+        {
+            GameObject placeholder = Instantiate(placeholderPrefab, civilianContainer);
+            placeholder.name = $"Placeholder_{i}";
+
+            var netObj = placeholder.GetComponent<NetworkObject>();
+            netObj.Spawn();
+            netObj.TrySetParent(civilianContainer.GetComponent<NetworkObject>(), false);
+
+            var slot = placeholder.GetComponent<CivilianSlot>();
+            slot.SlotIndex.Value = i;
+
+            placeholder.transform.SetAsLastSibling();
+        }
     }
 
-    public void AddCivilian(InventoryCivilianBehaviour inventoryCivilian)
+    public void RequestAddCivilian(InventoryCivilianBehaviour inventoryCivilian)
     {
-        if (!IsServer)
+        if (inventoryCivilian == null)
+        {
+            Debug.LogError("RequestAddCivilian: inventoryCivilian is null.");
             return;
+        }
+
+        Trait trait = inventoryCivilian.Trait;
+        Trait[] likedTraits = inventoryCivilian.LikedTraits?.ToArray() ?? new Trait[0];
+        Trait[] dislikedTraits = inventoryCivilian.DislikedTraits?.ToArray() ?? new Trait[0];
+
+        if (IsServer)
+        {
+            AddCivilianInternal(trait, likedTraits, dislikedTraits);
+        }
+        else
+        {
+            AddCivilianServerRpc(trait, likedTraits, dislikedTraits);
+        }
+    }
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    private void AddCivilianServerRpc(Trait trait, Trait[] likedTraits, Trait[] dislikedTraits)
+    {
+        AddCivilianInternal(trait, likedTraits, dislikedTraits);
+    }
+
+    private void AddCivilianInternal(Trait trait, Trait[] likedTraits, Trait[] dislikedTraits)
+    {
+        if (!IsSpawned)
+        {
+            Debug.LogError("GridManager not spawned yet.");
+            return;
+        }
+
+        if (!IsServer)
+        {
+            Debug.LogError("AddCivilianInternal called on non-server instance.");
+            return;
+        }
 
         if (civilianPrefab == null)
         {
@@ -83,13 +134,18 @@ public class GridManager : NetworkBehaviour
             return;
         }
 
-        CivilianBehaviour civilian = SpawnCivilian(inventoryCivilian);
+        Debug.Log("Spawning civilian...");
+
+        CivilianBehaviour civilian = SpawnCivilian(trait, likedTraits, dislikedTraits);
         AddCivilianToList(civilian.gameObject);
+
+        NetworkObject networkObject = civilian.GetComponent<NetworkObject>();
+        ApplyTraitReactionsClientRpc(new NetworkObjectReference(networkObject));
     }
 
-    public void AddCivilianToList(GameObject civilianPrefab)
+    public void AddCivilianToList(GameObject civilianObject)
     {
-        CivilianBehaviour civilian = civilianPrefab.GetComponent<CivilianBehaviour>();
+        CivilianBehaviour civilian = civilianObject.GetComponent<CivilianBehaviour>();
         NetworkObject networkObject = civilian.GetComponent<NetworkObject>();
 
         var data = ActiveTraitCivilians.Value;
@@ -123,7 +179,38 @@ public class GridManager : NetworkBehaviour
         ActiveTraitCivilians.Value = data;
         ActiveTraitCivilians.CheckDirtyState();
     }
-    
+
+    [ClientRpc]
+    private void ApplyTraitReactionsClientRpc(NetworkObjectReference newCivilianRef)
+    {
+        if (!newCivilianRef.TryGet(out NetworkObject networkObject))
+        {
+            Debug.LogWarning("Could not resolve new civilian NetworkObject on client.");
+            return;
+        }
+
+        CivilianBehaviour newCivilian = networkObject.GetComponent<CivilianBehaviour>();
+        if (newCivilian == null)
+        {
+            Debug.LogWarning("Resolved NetworkObject has no CivilianBehaviour.");
+            return;
+        }
+
+        int scoreChange = 1;
+        foreach (CivilianBehaviour existingCivilian in GetAllCivilians())
+        {
+            if (existingCivilian == null || existingCivilian == newCivilian)
+                continue;
+
+            scoreChange += existingCivilian.ReactToTrait(newCivilian.Trait);
+            scoreChange += newCivilian.ReactToTrait(existingCivilian.Trait);
+        }
+        if (IsServer && scoreChange != 0)
+        {
+            GameManager.Instance.Score.Value += scoreChange;
+        }
+    }
+
     public int GetAllCiviliansCount()
     {
         var data = ActiveTraitCivilians.Value;
@@ -172,29 +259,85 @@ public class GridManager : NetworkBehaviour
         return civilians;
     }
 
-    public CivilianBehaviour SpawnCivilian(InventoryCivilianBehaviour inventoryCivilian)
+    public CivilianBehaviour SpawnCivilian(Trait trait, Trait[] likedTraits, Trait[] dislikedTraits)
     {
-        GameObject civilian = Instantiate(civilianPrefab, civilianContainer);
+        Debug.Log("Spawning civilian on server...");
 
+        GameObject civilian = Instantiate(civilianPrefab);
         CivilianBehaviour behaviour = civilian.GetComponent<CivilianBehaviour>();
-        
-        NetworkObject networkObject = civilian.GetComponent<NetworkObject>();
-        
-        networkObject.Spawn();
-        
-        behaviour.Initialize(inventoryCivilian);
-        
-        foreach(CivilianBehaviour existingCivilian in GetAllCivilians())
+        NetworkObject civilianNO = civilian.GetComponent<NetworkObject>();
+
+        behaviour.Initialize(trait, likedTraits, dislikedTraits);
+        civilianNO.Spawn();
+
+        var parentNO = civilianContainer.GetComponent<NetworkObject>();
+        if (parentNO == null)
         {
-            int scoreChange = 0;
-            if (existingCivilian != behaviour)
-            {
-                scoreChange += existingCivilian.ReactToTrait(behaviour.Trait);
-                scoreChange += behaviour.ReactToTrait(existingCivilian.Trait);
-            }
+            Debug.LogError("civilianContainer must have a NetworkObject.");
+            return behaviour;
+        }
+
+        NetworkObject slotNO = GetNextAvailableSlot();
+        if (slotNO != null)
+        {
+            PlaceCivilianInSlot(civilianNO, slotNO);
+        }
+        else
+        {
+            civilianNO.TrySetParent(parentNO, false);
+            Debug.LogWarning("No available slot found.");
         }
 
         return behaviour;
+    }
+    
+    private NetworkObject GetNextAvailableSlot()
+    {
+        for (int i = 0; i < civilianContainer.childCount; i++)
+        {
+            Transform child = civilianContainer.GetChild(i);
+
+            CivilianSlot slot = child.GetComponent<CivilianSlot>();
+            if (slot != null)
+            {
+                NetworkObject no = child.GetComponent<NetworkObject>();
+                Debug.Log($"Found slot: {child.name}, IsSpawned={no != null && no.IsSpawned}");
+                return no;
+            }
+        }
+
+        return null;
+    }
+    
+    public void PlaceCivilianInSlot(NetworkObject civilianNO, NetworkObject slotNO)
+    {
+        if (!IsServer) return;
+
+        var parentNO = civilianContainer.GetComponent<NetworkObject>();
+        if (parentNO == null || civilianNO == null || slotNO == null) return;
+
+        CivilianSlot slot = slotNO.GetComponent<CivilianSlot>();
+        if (slot == null)
+        {
+            Debug.LogError("Slot object has no CivilianSlot.");
+            return;
+        }
+
+        int slotIndex = slot.SlotIndex.Value;
+
+        civilianNO.TrySetParent(parentNO, false);
+
+        CivilianBehaviour civilian = civilianNO.GetComponent<CivilianBehaviour>();
+        civilian.SlotIndex.Value = slotIndex;
+
+        civilianNO.transform.SetSiblingIndex(slotIndex);
+
+        slotNO.Despawn(true);
+        
+        if(GetAllCiviliansCount() >= CiviliansTargetCount)
+        {
+            GameManager.Instance.EndWave();
+        }
     }
 
     public List<NetworkObjectReference> GetTraitCivilians(Trait trait)

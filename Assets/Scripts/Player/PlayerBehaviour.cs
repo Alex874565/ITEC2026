@@ -24,7 +24,7 @@ public class PlayerBehaviour : NetworkBehaviour
     public void OnWaveStarted(int oldValue, int newValue)
     {
         if (!IsOwner) return;
-        InitializeInventory(newValue - 1);
+        InitializeInventory(newValue);
     }
     
     public void InitializeInventory(int civiliansCount)
