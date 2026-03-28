@@ -6,6 +6,8 @@ public class UIManager : MonoBehaviour
     
     public GameObject HUD;
     public GameObject Lobby;
+    public UIButtonVisual startButton;
+    [SerializeField] private TitleAnimation titleAnimation;
     
     private void Awake()
     {
@@ -15,5 +17,16 @@ public class UIManager : MonoBehaviour
             return;
         }
         Instance = this;
+    }
+
+    void Start()
+    {
+        titleAnimation.ShowTitle();
+        Invoke(nameof(SetDefaultButton), 0.01f);
+    }
+
+    void SetDefaultButton()
+    {
+        UISelectionManager.Instance.SetDefault(startButton);
     }
 }
