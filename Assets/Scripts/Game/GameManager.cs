@@ -92,12 +92,17 @@ public class GameManager : NetworkBehaviour
         hudManager.ScoreText.text = $"{Score.Value}/{RequiredScore.Value}";
     }
 
-    private void UpdateDebt()
+    private void UpdateTotalPoints(int oldValue, int newValue)
     {
         
     }
 
-    private void UpdateReturn()
+    private void UpdateDebt(int oldValue, int newValue)
+    {
+        
+    }
+
+    private void UpdateReturn(int  oldValue, int newValue)
     {
         
     }

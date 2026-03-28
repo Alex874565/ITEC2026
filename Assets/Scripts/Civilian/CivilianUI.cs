@@ -9,6 +9,7 @@ public class CivilianUI : MonoBehaviour
     public Image Image;
     public Vector2 NeutralRange;
     public GameObject Tooltip;
+    public TextMeshProUGUI TraitContainer;
     public List<TextMeshProUGUI> LikedTraitsContainers;
     public List<TextMeshProUGUI> DislikedTraitsContainers;
 
@@ -23,6 +24,8 @@ public class CivilianUI : MonoBehaviour
         
         //UpdateImage(0);
 
+        TraitContainer.text = _trait.ToString();
+        
         for(int i = 0; i < LikedTraitsContainers.Count; i++)
         {
             if(i < likedTraits.Length)

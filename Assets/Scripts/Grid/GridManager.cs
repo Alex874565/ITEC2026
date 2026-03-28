@@ -196,7 +196,7 @@ public class GridManager : NetworkBehaviour
             return;
         }
 
-        int scoreChange = 1;
+        int scoreChange = ModifiersManager.Instance.GetModifierDataForTrait(newCivilian.Trait.Trait).Spawn;
         foreach (CivilianBehaviour existingCivilian in GetAllCivilians())
         {
             if (existingCivilian == null || existingCivilian == newCivilian)

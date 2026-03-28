@@ -21,12 +21,14 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        titleAnimation.ShowTitle();
+        if(titleAnimation != null)
+            titleAnimation.ShowTitle();
         Invoke(nameof(SetDefaultButton), 0.01f);
     }
 
     void SetDefaultButton()
     {
-        UISelectionManager.Instance.SetDefault(startButton);
+        if(startButton != null)
+            UISelectionManager.Instance.SetDefault(startButton);
     }
 }
