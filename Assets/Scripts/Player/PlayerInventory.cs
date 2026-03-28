@@ -18,6 +18,8 @@ public class PlayerInventory : MonoBehaviour
             behaviour.OnCivilianClicked += SelectCivilian;
             CivilianBehaviours.Add(behaviour);
         }
+        
+        GameManager.Instance.OnEndWave += Clear;
     }
     
     public void SelectCivilian(int index)
@@ -47,6 +49,7 @@ public class PlayerInventory : MonoBehaviour
         {
             c.DestroySelf();
         }
+        GameManager.Instance.OnEndWave -= Clear;
     }
 
     public void OnDisable()

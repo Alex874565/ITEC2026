@@ -4903,6 +4903,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HUD: {fileID: 726710851}
   Lobby: {fileID: 1717359276}
+  startButton: {fileID: 0}
+  titleAnimation: {fileID: 0}
 --- !u!1001 &1690929273
 PrefabInstance:
   m_ObjectHideFlags: 0
