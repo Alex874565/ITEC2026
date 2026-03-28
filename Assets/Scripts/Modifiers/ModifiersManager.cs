@@ -170,11 +170,11 @@ public class ModifiersManager : NetworkBehaviour
                 spawn = upgrade.Value;
                 break;
 
-            case ModifierType.Positive:
+            case ModifierType.Like:
                 positive = Mathf.Max(0, upgrade.Value);
                 break;
 
-            case ModifierType.Negative:
+            case ModifierType.Dislike:
                 negative = Mathf.Min(0, upgrade.Value);
                 break;
         }
@@ -210,14 +210,14 @@ public class ModifiersManager : NetworkBehaviour
                 break;
             }
 
-            case ModifierType.Positive:
+            case ModifierType.Like:
             {
                 int baseChange = Mathf.Abs(Mathf.RoundToInt(positiveChangeCurve.Evaluate(t)));
                 value = Mathf.Max(1, Mathf.RoundToInt(baseChange * multiplier));
                 break;
             }
 
-            case ModifierType.Negative:
+            case ModifierType.Dislike:
             {
                 int baseChange = Mathf.Abs(Mathf.RoundToInt(negativeChangeCurve.Evaluate(t)));
                 value = -Mathf.Max(1, Mathf.RoundToInt(baseChange * multiplier));
@@ -304,7 +304,7 @@ public class ModifiersManager : NetworkBehaviour
                 break;
             }
 
-            case ModifierType.Positive:
+            case ModifierType.Like:
             {
                 int baseChange = Mathf.Abs(Mathf.RoundToInt(positiveChangeCurve.Evaluate(t)));
                 int finalChange = Mathf.Max(1, Mathf.RoundToInt(baseChange * multiplier));
@@ -313,7 +313,7 @@ public class ModifiersManager : NetworkBehaviour
                 break;
             }
 
-            case ModifierType.Negative:
+            case ModifierType.Dislike:
             {
                 int baseChange = Mathf.Abs(Mathf.RoundToInt(negativeChangeCurve.Evaluate(t)));
                 int finalChange = Mathf.Max(1, Mathf.RoundToInt(baseChange * multiplier));

@@ -1,6 +1,6 @@
 ﻿public enum ModifierType
 {
     Spawn,
-    Positive,
-    Negative
+    Like,
+    Dislike
 }

@@ -6,6 +6,8 @@ public class UIManager : MonoBehaviour
     
     public GameObject HUD;
     public GameObject Lobby;
+    public GameObject Upgrades;
+    public GameObject Bank;
     public UIButtonVisual startButton;
     [SerializeField] private TitleAnimation titleAnimation;
     

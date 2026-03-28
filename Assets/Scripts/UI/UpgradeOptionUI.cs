@@ -67,10 +67,20 @@ public class UpgradeOptionUI : OptionUI
 
     private string GetUpgradeDisplayText(ModifierUpgrade upgrade)
     {
+        bool isPositive = upgrade.Value > 0;
+
+        // For Dislike (Negative), invert meaning
+        if (upgrade.Type == ModifierType.Dislike)
+            isPositive = !isPositive;
+
+        string color = isPositive ? "#66FF66" : "#FF5252";
+
         string signedValue = upgrade.Value > 0
             ? $"+{upgrade.Value}"
             : upgrade.Value.ToString();
 
-        return $"{upgrade.Trait} {upgrade.Type} {signedValue}";
+        string coloredValue = $"<color={color}>{signedValue}</color>";
+
+        return $"{upgrade.Trait}: {coloredValue} {upgrade.Type} Value";
     }
 }
