@@ -4,7 +4,7 @@ using TMPro;
 
 public class TitleAnimation : MonoBehaviour
 {
-    [SerializeField] private CanvasGroup canvasGroup; // attach CanvasGroup
+    [SerializeField] private CanvasGroup canvasGroup; // assign in inspector
     private Vector3 originalScale;
 
     [Header("Animation Settings")]
@@ -18,17 +18,24 @@ public class TitleAnimation : MonoBehaviour
 
         originalScale = transform.localScale;
 
-        // Start invisible and scaled down
+        // Start hidden
         canvasGroup.alpha = 0f;
         transform.localScale = Vector3.zero;
     }
 
-    public void ShowTitle()
+    public void ShowTitle(float delay = 0f)
     {
-        // Animate alpha
-        canvasGroup.DOFade(1f, duration);
+        // Fade in
+        canvasGroup.DOFade(1f, duration).SetDelay(delay);
+        // Scale up
+        transform.DOScale(originalScale, duration).SetEase(ease).SetDelay(delay);
+    }
 
-        // Animate scale to original
-        transform.DOScale(originalScale, duration).SetEase(ease);
+    public void HideTitle(float delay = 0f)
+    {
+        // Fade out
+        canvasGroup.DOFade(0f, duration).SetDelay(delay);
+        // Scale down
+        transform.DOScale(Vector3.zero, duration).SetEase(Ease.InBack).SetDelay(delay);
     }
 }

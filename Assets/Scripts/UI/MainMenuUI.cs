@@ -8,6 +8,7 @@ public class MainMenuUI : MonoBehaviour
     [SerializeField] private Button settingsButton;
     [SerializeField] private Button quitButton;
     [SerializeField] private MenuStaggerAnimation stagger;
+    [SerializeField] private TitleAnimation titleAnimation;
 
     private void Awake()
     {
@@ -17,6 +18,9 @@ public class MainMenuUI : MonoBehaviour
             {
                 SceneManager.LoadScene("HubScene");
             });
+            
+            // Hide title simultaneously
+            titleAnimation.HideTitle();
         });
         settingsButton.onClick.AddListener(() =>
         {
@@ -26,9 +30,11 @@ public class MainMenuUI : MonoBehaviour
         {
             stagger.CloseMenu(() =>
             {
-            Debug.Log("quit clicked");
-            Application.Quit();
+                Debug.Log("quit clicked");
+                Application.Quit();
             });
+            
+            titleAnimation.HideTitle();
         });
     }
 
