@@ -45,8 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1797740623
-  InScenePlacedSourceGlobalObjectIdHash: 0
+  GlobalObjectIdHash: 1198203875
+  InScenePlacedSourceGlobalObjectIdHash: 1957577138
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
@@ -72,7 +72,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   civilianPrefab: {fileID: 5964192480633516577, guid: 85303afe385fd0a4fa6ac3226f6deefd, type: 3}
-  civilianContainer: {fileID: 0}
+  placeholderPrefab: {fileID: 328299481266524295, guid: 13e16e73f9418384eaf0600200d4d0c2, type: 3}
+  placeholderAppearStepDelay: 0.08
+  placeholderAppearDuration: 0.4
+  placeAnimDuration: 0.5
+  clearStepDelay: 0.08
+  clearAnimDuration: 0.25
+  appearStartScale: 0.75
+  clearEndScale: 0.75
   CiviliansTargetCount: 0
   ActiveTraitCivilians:
     UpdateTraits:

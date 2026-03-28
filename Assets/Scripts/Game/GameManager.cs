@@ -1,5 +1,6 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
+using System;
 
 public class GameManager : NetworkBehaviour
 {
@@ -14,6 +15,14 @@ public class GameManager : NetworkBehaviour
     public NetworkVariable<int> Score = new(0);
 
     private NetworkVariable<int> RequiredScore = new(0);
+
+    public NetworkVariable<int> TotalPoints = new(0);
+
+    public NetworkVariable<int> InvestmentReturn = new(0);
+    
+    public NetworkVariable<int> Debt = new(0);
+
+    public event Action OnEndWave;
 
     [Header("Score Progression")]
     [SerializeField] private AnimationCurve requiredScoreCurve = new AnimationCurve(
@@ -62,7 +71,9 @@ public class GameManager : NetworkBehaviour
             NetworkManager.OnClientDisconnectCallback -= OnClientChanged;
         }
 
-        EndGame();
+        
+        if (GridManager.Instance != null)
+            CurrentWave.OnValueChanged -= GridManager.Instance.OnWaveStarted;
     }
 
     private void OnClientChanged(ulong clientId)
@@ -79,6 +90,21 @@ public class GameManager : NetworkBehaviour
     {
         HUDManager hudManager = UIManager.Instance.HUD.GetComponent<HUDManager>();
         hudManager.ScoreText.text = $"{Score.Value}/{RequiredScore.Value}";
+    }
+
+    private void UpdateTotalPoints(int oldValue, int newValue)
+    {
+        
+    }
+
+    private void UpdateDebt(int oldValue, int newValue)
+    {
+        
+    }
+
+    private void UpdateReturn(int  oldValue, int newValue)
+    {
+        
     }
 
     private int GetRequiredScoreForWave(int wave)
@@ -99,10 +125,9 @@ public class GameManager : NetworkBehaviour
         CurrentWave.Value = 1;
     }
 
-    public void EndGame()
+    [ClientRpc]
+    public void EndGameClientRpc()
     {
-        if (GridManager.Instance != null)
-            CurrentWave.OnValueChanged -= GridManager.Instance.OnWaveStarted;
     }
 
     private void ToggleUIs(bool oldValue, bool newValue)
@@ -126,7 +151,26 @@ public class GameManager : NetworkBehaviour
 
     public void EndWave()
     {
-        
+        if (IsServer)
+        {
+            TotalPoints.Value += Score.Value - RequiredScore.Value + InvestmentReturn.Value - Debt.Value;
+            InvestmentReturn.Value = 0;
+            Debt.Value = 0;
+            EndWaveClientRpc();
+        }
+    }
+
+    [ClientRpc]
+    public void EndWaveClientRpc()
+    {
+        if (Score.Value > RequiredScore.Value)
+        {
+            OnEndWave?.Invoke();
+        }
+        else
+        {
+            EndGameClientRpc();
+        }
     }
 
     public void ChangeActivePlayer()

@@ -4,6 +4,7 @@ using Unity.Netcode;
 public struct TraitModifier : INetworkSerializable, IEquatable<TraitModifier>
 {
     public Trait Trait;
+    public int Spawn;
     public int Positive;
     public int Negative;
 

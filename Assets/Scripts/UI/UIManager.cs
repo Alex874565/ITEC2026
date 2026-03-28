@@ -6,6 +6,8 @@ public class UIManager : MonoBehaviour
     
     public GameObject HUD;
     public GameObject Lobby;
+    public GameObject Upgrades;
+    public GameObject Bank;
     public UIButtonVisual startButton;
     [SerializeField] private TitleAnimation titleAnimation;
     
@@ -21,12 +23,14 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        titleAnimation.Show();
+        if(titleAnimation != null)
+            titleAnimation.Show();
         Invoke(nameof(SetDefaultButton), 0.01f);
     }
 
     void SetDefaultButton()
     {
-        UISelectionManager.Instance.SetDefault(startButton);
+        if(startButton != null)
+            UISelectionManager.Instance.SetDefault(startButton);
     }
 }
