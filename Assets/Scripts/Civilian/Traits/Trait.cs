@@ -2,4 +2,8 @@
 {
     Nerd,
     Bully,
+    Athlete,
+    Artist,
+    Musician,
+    Gamer,
 }

@@ -394,6 +394,29 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7501063516743568807, guid: 9a1b4cf5a090b464dbf965a811e6bb7f, type: 3}
   m_PrefabInstance: {fileID: 1755930148270472551}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1126335070 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4791721391328034831, guid: c9a3291457b694a4685ea7152633fc33, type: 3}
+  m_PrefabInstance: {fileID: 7993100115595951515}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1126335075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1126335070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 417f5318efa64c64bcac627ea42792f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  PlayerCount:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
 --- !u!1 &1262040843
 GameObject:
   m_ObjectHideFlags: 0
@@ -1084,6 +1107,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3277664572981756542, guid: c9a3291457b694a4685ea7152633fc33, type: 3}
+      propertyPath: m_Interactable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3277664572981756542, guid: c9a3291457b694a4685ea7152633fc33, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3277664572981756542, guid: c9a3291457b694a4685ea7152633fc33, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1968460352}
@@ -1223,10 +1254,49 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8186435170929490708, guid: c9a3291457b694a4685ea7152633fc33, type: 3}
+      propertyPath: JoinedSession.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8186435170929490708, guid: c9a3291457b694a4685ea7152633fc33, type: 3}
+      propertyPath: JoiningSession.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8186435170929490708, guid: c9a3291457b694a4685ea7152633fc33, type: 3}
+      propertyPath: JoinedSession.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8186435170929490708, guid: c9a3291457b694a4685ea7152633fc33, type: 3}
+      propertyPath: JoinedSession.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1126335075}
+    - target: {fileID: 8186435170929490708, guid: c9a3291457b694a4685ea7152633fc33, type: 3}
+      propertyPath: JoinedSession.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8186435170929490708, guid: c9a3291457b694a4685ea7152633fc33, type: 3}
+      propertyPath: JoinedSession.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnSessionJoined
+      objectReference: {fileID: 0}
+    - target: {fileID: 8186435170929490708, guid: c9a3291457b694a4685ea7152633fc33, type: 3}
+      propertyPath: JoiningSession.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8186435170929490708, guid: c9a3291457b694a4685ea7152633fc33, type: 3}
+      propertyPath: JoinedSession.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: StartButtonUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8186435170929490708, guid: c9a3291457b694a4685ea7152633fc33, type: 3}
+      propertyPath: JoinedSession.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4791721391328034831, guid: c9a3291457b694a4685ea7152633fc33, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1126335075}
   m_SourcePrefab: {fileID: 100100000, guid: c9a3291457b694a4685ea7152633fc33, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

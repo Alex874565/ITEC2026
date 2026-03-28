@@ -1,40 +1,69 @@
-﻿using Unity.Services.Multiplayer;
-using UnityEngine.UI;
-using Unity.Multiplayer.Widgets;
+﻿using UnityEngine.UI;
+using Unity.Netcode;
 using UnityEngine;
 
-public class StartButtonUI : MonoBehaviour
+public class StartButtonUI : NetworkBehaviour
 {
-    public ISession Session { get; set; }
-    
-    Button m_Button;
-        
-    void Start()
+    private Button m_Button;
+
+    public NetworkVariable<int> PlayerCount =
+        new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
+    public override void OnNetworkSpawn()
     {
         m_Button = GetComponent<Button>();
         m_Button.onClick.AddListener(StartGame);
-        SetButtonActive();
+
+        PlayerCount.OnValueChanged += SetButtonActive;
+
+        if (IsServer)
+        {
+            UpdatePlayerCount();
+            NetworkManager.OnClientConnectedCallback += OnClientChanged;
+            NetworkManager.OnClientDisconnectCallback += OnClientChanged;
+        }
+
+        SetButtonActive(0, PlayerCount.Value);
     }
 
-    public void OnSessionLeft()
+    public override void OnNetworkDespawn()
     {
-        SetButtonActive();
+        if (m_Button != null)
+            m_Button.onClick.RemoveListener(StartGame);
+
+        PlayerCount.OnValueChanged -= SetButtonActive;
+
+        if (IsServer && NetworkManager != null)
+        {
+            NetworkManager.OnClientConnectedCallback -= OnClientChanged;
+            NetworkManager.OnClientDisconnectCallback -= OnClientChanged;
+        }
     }
 
-    public void OnSessionJoined()
+    private void OnClientChanged(ulong clientId)
     {
-        SetButtonActive();
+        UpdatePlayerCount();
     }
 
-        
-    void SetButtonActive()
+    private void UpdatePlayerCount()
     {
-        m_Button.interactable = Session?.Players?.Count == 2;
+        PlayerCount.Value = NetworkManager.Singleton.ConnectedClients.Count;
     }
-        
+
+    private void SetButtonActive(int oldValue, int newValue)
+    {
+        Debug.Log($"Connected Clients: {newValue}");
+        m_Button.interactable = (newValue == 2);
+    }
+
     private void StartGame()
     {
-        if(Session?.Players?.Count == 2)
+        if (!IsServer)
+        {
+            return;
+        }
+
+        if (PlayerCount.Value == 2)
         {
             GameManager.Instance.StartGame();
         }

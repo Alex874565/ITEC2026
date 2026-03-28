@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class InventoryCivilianBehaviour : MonoBehaviour
 {
     public CivilianUI CivilianUI;
     
-    private Trait _trait;
+    public Trait Trait;
     private List<Trait> _likedTraits;
     private List<Trait> _dislikedTraits;
 
@@ -14,20 +15,24 @@ public class InventoryCivilianBehaviour : MonoBehaviour
     {
         _likedTraits = new List<Trait>();
         _dislikedTraits = new List<Trait>();
-        
+    }
+
+    private void Start()
+    {
         SelectRandomTraits();
+        Debug.Log(Trait);
     }
 
     private void SelectRandomTraits()
     {
-        _trait = (Trait)UnityEngine.Random.Range(0, Enum.GetValues(typeof(Trait)).Length);
+        Trait = (Trait)UnityEngine.Random.Range(0, Enum.GetValues(typeof(Trait)).Length);
         int likedCount = UnityEngine.Random.Range(0, 4); // Randomly like 1 to 3 traits
         int dislikedCount = UnityEngine.Random.Range(0, 4);
         
         while(_likedTraits.Count < likedCount)
         {
             Trait randomTrait = (Trait)UnityEngine.Random.Range(0, Enum.GetValues(typeof(Trait)).Length);
-            if(randomTrait != _trait && !_likedTraits.Contains(randomTrait))
+            if(randomTrait != Trait && !_likedTraits.Contains(randomTrait))
             {
                 _likedTraits.Add(randomTrait);
             }
@@ -36,7 +41,7 @@ public class InventoryCivilianBehaviour : MonoBehaviour
         while (_dislikedTraits.Count < dislikedCount)
         {
             Trait randomTrait = (Trait)UnityEngine.Random.Range(0, Enum.GetValues(typeof(Trait)).Length);
-            if (randomTrait != _trait && !_likedTraits.Contains(randomTrait) && !_dislikedTraits.Contains(randomTrait))
+            if (randomTrait != Trait && !_likedTraits.Contains(randomTrait) && !_dislikedTraits.Contains(randomTrait))
             {
                 _dislikedTraits.Add(randomTrait);
             }
