@@ -10479,6 +10479,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HUD: {fileID: 0}
   Lobby: {fileID: 0}
+  Upgrades: {fileID: 0}
+  Bank: {fileID: 0}
   startButton: {fileID: 1794751944}
   titleAnimation: {fileID: 503320797}
 --- !u!4 &1699711863
