@@ -59,6 +59,7 @@ public class InventoryCivilianBehaviour : MonoBehaviour, IPointerClickHandler
     
     public void OnPointerClick(PointerEventData eventData)
     {
+        GridManager.Instance.RequestAddCivilian(this);
         OnCivilianClicked?.Invoke(Index);
     }
 }

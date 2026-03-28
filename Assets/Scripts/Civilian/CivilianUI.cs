@@ -14,8 +14,8 @@ public class CivilianUI : MonoBehaviour
     public void Initialize(Trait trait)
     {
         _trait = trait;
-        _traitSprites = Database.TraitSpritesList.Find(x => x.Trait == _trait);
-        Image.sprite = _traitSprites.NeutralSprite;
+        //_traitSprites = Database.TraitSpritesList.Find(x => x.Trait == _trait);
+        //Image.sprite = _traitSprites.NeutralSprite;
     }
 
     public void UpdateImage(int traitValue)

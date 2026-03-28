@@ -49,6 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f965b8f040dc42d782112ffb548be62b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerBehaviour: {fileID: 0}
   CivilianPrefab: {fileID: 2043261126826194973, guid: 88024ce3149c41e4bb6ed68ab5881734, type: 3}
 --- !u!114 &5093142353106083761
 MonoBehaviour:

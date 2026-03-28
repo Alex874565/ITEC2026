@@ -44,6 +44,8 @@ public class GameManager : NetworkBehaviour
             NetworkManager.OnClientConnectedCallback -= OnClientChanged;
             NetworkManager.OnClientDisconnectCallback -= OnClientChanged;
         }
+        
+        EndGame();
     }
     
     private void OnClientChanged(ulong clientId)
@@ -61,9 +63,17 @@ public class GameManager : NetworkBehaviour
         if (!IsServer || !IsSpawned)
             return;
 
+        if (GridManager.Instance != null)
+            CurrentWave.OnValueChanged += GridManager.Instance.OnWaveStarted;
+
         GamePaused.Value = false;
         GameStarted.Value = true;
         CurrentWave.Value = 1;
+    }
+    public void EndGame()
+    {
+        if (GridManager.Instance != null)
+            CurrentWave.OnValueChanged -= GridManager.Instance.OnWaveStarted;
     }
 
     private void ToggleUIs(bool oldValue, bool newValue)

@@ -1,4 +1,7 @@
 ﻿using Unity.Netcode;
+using UnityEngine;
+using System.Collections.Generic;
+
 public class CivilianBehaviour : NetworkBehaviour
 {
     public TraitStruct Trait;
@@ -7,7 +10,7 @@ public class CivilianBehaviour : NetworkBehaviour
     
     public NetworkVariable<int> Happiness = new NetworkVariable<int>(0);
     
-    public ModifiersManager ModifiersManager = new ModifiersManager();
+    public ModifiersManager ModifiersManager;
 
     public CivilianUI CivillianUI;
 
@@ -23,28 +26,30 @@ public class CivilianBehaviour : NetworkBehaviour
         };
     }
 
-    public void Initialize(InventoryCivilianBehaviour inventoryCivilianBehaviour)
+    public void Initialize(Trait trait, Trait[] likedTraits, Trait[] dislikedTraits)
     {
         Trait = new TraitStruct
         {
-            Trait = inventoryCivilianBehaviour.Trait
+            Trait = trait
         };
         
-        foreach (var trait in inventoryCivilianBehaviour.LikedTraits)
+        foreach (var likedTrait in likedTraits)
         {
             LikedTraits.Add(new TraitStruct
             {
-                Trait = trait
+                Trait = likedTrait
             });
         }
         
-        foreach (var trait in inventoryCivilianBehaviour.DislikedTraits)
+        foreach (var dislikedTrait in dislikedTraits)
         {
             DislikedTraits.Add(new TraitStruct
             {
-                Trait = trait
+                Trait = dislikedTrait
             });
         }
+        
+        Debug.Log($"Civilian initialized with trait: {Trait.Trait}, liked traits: {LikedTraits.Count}, disliked traits: {DislikedTraits.Count}");
     }
     
     public int ReactToTrait(TraitStruct trait)
