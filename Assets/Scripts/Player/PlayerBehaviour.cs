@@ -5,13 +5,15 @@ public class PlayerBehaviour : NetworkBehaviour
 {
     public PlayerInventory Inventory;
     
-    private StartButtonUI _startButtonUI;
+    public int PlayerNumber = 0;
     
     public override void OnNetworkSpawn()
     {
-        Inventory = FindFirstObjectByType<PlayerInventory>();
-        _startButtonUI = FindFirstObjectByType<StartButtonUI>();
+        Inventory = FindFirstObjectByType<PlayerInventory>(FindObjectsInactive.Include);
+        Inventory.PlayerBehaviour = this;
+        PlayerNumber = IsServer ? 1 : 2;
         GameManager.Instance.CurrentWave.OnValueChanged += OnWaveStarted;
+        UIManager.Instance.HUD.GetComponent<HUDManager>().Player = this;
     }
     
     public override void OnNetworkDespawn()
@@ -22,7 +24,7 @@ public class PlayerBehaviour : NetworkBehaviour
     public void OnWaveStarted(int oldValue, int newValue)
     {
         if (!IsOwner) return;
-        InitializeInventory(2);
+        InitializeInventory(newValue - 1);
     }
     
     public void InitializeInventory(int civiliansCount)

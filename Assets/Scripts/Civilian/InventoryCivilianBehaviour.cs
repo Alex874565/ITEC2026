@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 
-public class InventoryCivilianBehaviour : MonoBehaviour
+public class InventoryCivilianBehaviour : MonoBehaviour, IPointerClickHandler
 {
+    public int Index;
     public CivilianUI CivilianUI;
     
     public Trait Trait;
     private List<Trait> _likedTraits;
     private List<Trait> _dislikedTraits;
+    
+    public event Action<int> OnCivilianClicked;
 
     private void Awake()
     {
@@ -51,5 +55,10 @@ public class InventoryCivilianBehaviour : MonoBehaviour
     public void DestroySelf()
     {
         Destroy(gameObject);
+    }
+    
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        OnCivilianClicked?.Invoke(Index);
     }
 }

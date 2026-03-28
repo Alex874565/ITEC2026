@@ -10,8 +10,8 @@ public class GameManager : NetworkBehaviour
     public NetworkVariable<int> CurrentWave = new(0);
     public NetworkVariable<bool> GameStarted = new(false);
 
-    public Action OnWaveStarted;
-    public Action OnWaveEnded;
+    public NetworkVariable<int> PlayerCount = new(0);
+    public NetworkVariable<int> ActivePlayer = new(0);
 
     private void Awake()
     {
@@ -27,11 +27,33 @@ public class GameManager : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         GameStarted.OnValueChanged += ToggleUIs;
+        CurrentWave.OnValueChanged += OnWaveStarted;
+        if (IsServer)
+        {
+            NetworkManager.OnClientConnectedCallback += OnClientChanged;
+            NetworkManager.OnClientDisconnectCallback += OnClientChanged;
+        }
     }
 
     public override void OnNetworkDespawn()
     {
         GameStarted.OnValueChanged -= ToggleUIs;
+        CurrentWave.OnValueChanged -= OnWaveStarted;
+
+        if (IsServer){
+            NetworkManager.OnClientConnectedCallback -= OnClientChanged;
+            NetworkManager.OnClientDisconnectCallback -= OnClientChanged;
+        }
+    }
+    
+    private void OnClientChanged(ulong clientId)
+    {
+        UpdatePlayerCount();
+    }
+
+    private void UpdatePlayerCount()
+    {
+        PlayerCount.Value = NetworkManager.Singleton.ConnectedClients.Count;
     }
 
     public void StartGame()
@@ -51,5 +73,39 @@ public class GameManager : NetworkBehaviour
 
         UIManager.Instance.HUD.SetActive(newValue);
         UIManager.Instance.Lobby.SetActive(!newValue);
+    }
+
+    private void OnWaveStarted(int oldValue, int newValue)
+    {
+        if (!IsServer || !IsSpawned)
+            return;
+        
+        ActivePlayer.Value = 1;
+    }
+
+    public void ChangeActivePlayer()
+    {
+        if (IsServer)
+        {
+            ChangeActivePlayerServerLogic();
+        }
+        else
+        {
+            RequestChangeActivePlayerRpc();
+        }
+    }
+
+    [Rpc(SendTo.Server)]
+    private void RequestChangeActivePlayerRpc()
+    {
+        ChangeActivePlayerServerLogic();
+    }
+
+    private void ChangeActivePlayerServerLogic()
+    {
+        if (!IsServer || !IsSpawned)
+            return;
+
+        ActivePlayer.Value = (ActivePlayer.Value == 1) ? 2 : 1;
     }
 }

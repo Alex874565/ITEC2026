@@ -6,4 +6,5 @@
     Artist,
     Musician,
     Gamer,
+    Fashionista,
 }
