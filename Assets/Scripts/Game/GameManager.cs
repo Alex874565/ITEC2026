@@ -34,6 +34,11 @@ public class GameManager : NetworkBehaviour
         new Keyframe(5, 80)
     );
 
+    private bool isOptionsActive = false;
+
+    public event EventHandler OnOptionsActive;
+    public event EventHandler OnOptionsInactive;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -43,6 +48,24 @@ public class GameManager : NetworkBehaviour
         }
 
         Instance = this;
+    }
+
+    private void Start()
+    {
+        GameInput.Instance.OnEscapeAction += GameInput_OnEscapeAction;
+    }
+
+    private void GameInput_OnEscapeAction(object sender, EventArgs e)
+    {
+        Debug.Log("esc");
+        isOptionsActive = !isOptionsActive;
+        if (isOptionsActive)
+        {
+            OnOptionsActive?.Invoke(this, EventArgs.Empty);
+        } else
+        {
+            OnOptionsInactive?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     public override void OnNetworkSpawn()

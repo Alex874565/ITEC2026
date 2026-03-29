@@ -7,6 +7,7 @@ public class MenuStaggerAnimation : MonoBehaviour
     private Dictionary<RectTransform, Vector3> originalScales = new Dictionary<RectTransform, Vector3>();
     [SerializeField] private RectTransform moneyElement;
     [SerializeField] private RectTransform timeElement;
+    [SerializeField] private RectTransform lvlElement;
     [Header("Buttons To Animate")]
     [SerializeField] private RectTransform[] buttons;
 
@@ -41,7 +42,7 @@ public class MenuStaggerAnimation : MonoBehaviour
         // }
     }
 
-    public void OpenMenu(System.Action onMoneyShown = null, System.Action onTimeShown = null)
+    public void OpenMenu(System.Action onLvlShown = null, System.Action onTimeShown = null)
     {
         currentSequence?.Kill();
         currentSequence = DOTween.Sequence().SetUpdate(true);
@@ -68,11 +69,13 @@ public class MenuStaggerAnimation : MonoBehaviour
             currentSequence.Insert(appearanceTime, scaleTween);
 
             // Callbacks for Money/Time
-            if (button == moneyElement && onMoneyShown != null)
-                scaleTween.OnComplete(() => onMoneyShown.Invoke());
+            if (button == lvlElement && onLvlShown != null)
+            {
+                scaleTween.OnComplete(() => onLvlShown.Invoke());
+            }
 
-            if (button == timeElement && onTimeShown != null)
-                scaleTween.OnComplete(() => onTimeShown.Invoke());
+            // if (button == timeElement && onTimeShown != null)
+            //     scaleTween.OnComplete(() => onTimeShown.Invoke());
         }
     }
 
