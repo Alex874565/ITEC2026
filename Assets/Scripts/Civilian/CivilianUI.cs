@@ -12,6 +12,7 @@ public class CivilianUI : MonoBehaviour
     public TextMeshProUGUI TraitContainer;
     public List<TextMeshProUGUI> LikedTraitsContainers;
     public List<TextMeshProUGUI> DislikedTraitsContainers;
+    public TextMeshProUGUI ScoreText;
 
     private Trait _trait;
     
@@ -66,6 +67,16 @@ public class CivilianUI : MonoBehaviour
         {
             Image.sprite = _traitSprites.NeutralSprite;
         }
+    }
+
+    public void UpdateScoreText(int value)
+    {
+        ScoreText.text = value.ToString();
+    }
+
+    public void SetScoreTextActive(bool active)
+    {
+        ScoreText.gameObject.SetActive(active);
     }
 
     public void ShowTooltip()

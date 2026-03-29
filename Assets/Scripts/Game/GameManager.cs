@@ -1,6 +1,7 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
 using System;
+using DG.Tweening;
 
 public class GameManager : NetworkBehaviour
 {
@@ -50,6 +51,9 @@ public class GameManager : NetworkBehaviour
         CurrentWave.OnValueChanged += OnWaveStarted;
         Score.OnValueChanged += UpdateScore;
         RequiredScore.OnValueChanged += UpdateScore;
+        TotalPoints.OnValueChanged += UpdateTotalPoints;
+        Debt.OnValueChanged += UpdateDebt;
+        InvestmentReturn.OnValueChanged += UpdateReturn;
 
         if (IsServer)
         {
@@ -64,6 +68,9 @@ public class GameManager : NetworkBehaviour
         CurrentWave.OnValueChanged -= OnWaveStarted;
         Score.OnValueChanged -= UpdateScore;
         RequiredScore.OnValueChanged -= UpdateScore;
+        TotalPoints.OnValueChanged -= UpdateTotalPoints;
+        Debt.OnValueChanged -= UpdateDebt;
+        InvestmentReturn.OnValueChanged -= UpdateReturn;
 
         if (IsServer)
         {
@@ -94,17 +101,20 @@ public class GameManager : NetworkBehaviour
 
     private void UpdateTotalPoints(int oldValue, int newValue)
     {
-        
+        HUDManager hudManager = UIManager.Instance.HUD.GetComponent<HUDManager>();
+        hudManager.Points.text = $"{newValue}";
     }
 
     private void UpdateDebt(int oldValue, int newValue)
     {
-        
+        HUDManager hudManager = UIManager.Instance.HUD.GetComponent<HUDManager>();
+        hudManager.Debt.text = $"{newValue}";
     }
 
-    private void UpdateReturn(int  oldValue, int newValue)
+    private void UpdateReturn(int oldValue, int newValue)
     {
-        
+        HUDManager hudManager = UIManager.Instance.HUD.GetComponent<HUDManager>();
+        hudManager.Investment.text = $"{newValue}";
     }
 
     private int GetRequiredScoreForWave(int wave)
@@ -149,28 +159,77 @@ public class GameManager : NetworkBehaviour
         RequiredScore.Value = GetRequiredScoreForWave(newValue);
     }
 
+    public void StartNextWave()
+    {
+        CurrentWave.Value += 1;
+    }
+
     public void EndWave()
     {
-        if (IsServer)
+        if (!IsServer)
+            return;
+
+        bool success = Score.Value > RequiredScore.Value;
+
+        if (!success)
         {
-            TotalPoints.Value += Score.Value - RequiredScore.Value + InvestmentReturn.Value - Debt.Value;
-            InvestmentReturn.Value = 0;
-            Debt.Value = 0;
-            EndWaveClientRpc();
+            EndWaveClientRpc(false, 0, 0, 0, 0, 0);
+            return;
         }
+
+        int scoreValue = Score.Value;
+        int requiredScoreValue = RequiredScore.Value;
+        int investmentReturnValue = InvestmentReturn.Value;
+        int debtValue = Debt.Value;
+
+        int bonus = scoreValue - requiredScoreValue + investmentReturnValue - debtValue;
+        int totalPointsBefore = TotalPoints.Value;
+        int totalPointsAfter = totalPointsBefore + bonus;
+
+        TotalPoints.Value = totalPointsAfter;
+        InvestmentReturn.Value = 0;
+        Debt.Value = 0;
+
+        EndWaveClientRpc(
+            true,
+            scoreValue,
+            requiredScoreValue,
+            investmentReturnValue,
+            debtValue,
+            totalPointsBefore
+        );
     }
 
     [ClientRpc]
-    public void EndWaveClientRpc()
+    private void EndWaveClientRpc(
+        bool success,
+        int scoreValue,
+        int requiredScoreValue,
+        int investmentReturnValue,
+        int debtValue,
+        int totalPointsBefore
+    )
     {
-        if (Score.Value > RequiredScore.Value)
-        {
-            OnEndWave?.Invoke();
-        }
-        else
+        if (!success)
         {
             EndGameClientRpc();
+            return;
         }
+
+        OnEndWave?.Invoke();
+
+        int bonus = scoreValue - requiredScoreValue + investmentReturnValue - debtValue;
+        int totalPointsAfter = totalPointsBefore + bonus;
+
+        UIManager.Instance.PlayEndWaveSequence(
+            scoreValue,
+            requiredScoreValue,
+            investmentReturnValue,
+            debtValue,
+            bonus,
+            totalPointsBefore,
+            totalPointsAfter
+        );
     }
 
     public void ChangeActivePlayer()

@@ -54,16 +54,35 @@ public class InventoryCivilianBehaviour : MonoBehaviour, IPointerClickHandler, I
         CivilianUI.Initialize(Trait, LikedTraits.ToArray(), DislikedTraits.ToArray());
     }
     
+    private bool isBeingDestroyed;
+
+    public void SetScoreTipActive(bool active)
+    {
+        CivilianUI.SetScoreTextActive(active);
+    }
+    
+    public void SetScoreTip(int score)
+    {
+        CivilianUI.UpdateScoreText(score);
+    }
+
+    public void CalculateScoreTip()
+    {
+        
+    }
+
     public void DestroySelf()
     {
+        if (isBeingDestroyed)
+            return;
+
+        isBeingDestroyed = true;
         Destroy(gameObject);
     }
     
     public void OnPointerClick(PointerEventData eventData)
     {
-        GridManager.Instance.RequestAddCivilian(this);
         OnCivilianClicked?.Invoke(Index);
-        DestroySelf();
     }
 
     public void OnPointerEnter(PointerEventData eventData)

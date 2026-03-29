@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
@@ -11,8 +12,10 @@ public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointe
     
     public NetworkVariable<int> Happiness = new NetworkVariable<int>(0);
     
-    public CivilianUI CivillianUI;
+    public CivilianUI CivilianUI;
     public NetworkVariable<int> SlotIndex = new NetworkVariable<int>(-1);
+    
+    private PlayerInventory _playerInventory;
     
     public override void OnNetworkSpawn()
     {
@@ -50,7 +53,7 @@ public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointe
         for (int i = 0; i < DislikedTraits.Count; i++)
             disliked[i] = DislikedTraits[i].Trait;
 
-        CivillianUI.Initialize(Trait.Trait, liked, disliked);
+        CivilianUI.Initialize(Trait.Trait, liked, disliked);
     }
 
     public void Initialize(Trait trait, Trait[] likedTraits, Trait[] dislikedTraits)
@@ -97,6 +100,73 @@ public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointe
         Happiness.Value += change;
         return change;
     }
+
+    public int ReactToTrait(Trait trait)
+    {
+        TraitStruct traitStruct = new TraitStruct
+        {
+            Trait = trait
+        };
+        int change = 0;
+
+        if (LikedTraits.Contains(traitStruct))
+        {
+            change = ModifiersManager.Instance.GetModifierDataForTrait(trait).Positive;
+        }
+        else if (DislikedTraits.Contains(traitStruct))
+        {
+            change = ModifiersManager.Instance.GetModifierDataForTrait(trait).Negative;
+        }
+
+        Happiness.Value += change;
+        return change;
+    }
+
+    public void SetScoreTipActive(bool active)
+    {
+        CivilianUI.SetScoreTextActive(active);
+    }
+
+    public void DisableScoreTips()
+    {
+        List<CivilianBehaviour> behaviours = GridManager.Instance.GetAllCivilians();
+        foreach (var behaviour in behaviours)
+        {
+            behaviour.SetScoreTipActive(false);
+        }
+    }
+    
+    public int CalculateScoreTip()
+    {
+        List<CivilianBehaviour> behaviours = GridManager.Instance.GetAllCivilians();
+        int score = 0;
+        foreach (var behaviour in behaviours)
+        {
+            if(behaviour == this) continue;
+            behaviour.SetScoreTipActive(true);
+            behaviour.SetScoreTip(behaviour.ReactToTrait(Trait.Trait));
+            score += ReactToTrait(behaviour.Trait.Trait);
+        }
+
+        if (_playerInventory == null)
+        {
+            _playerInventory = FindFirstObjectByType<PlayerInventory>();
+        }
+
+        List<InventoryCivilianBehaviour> inventoryCivilians = _playerInventory.CivilianBehaviours;
+        foreach (var behaviour in inventoryCivilians)
+        {
+            behaviour.SetScoreTipActive(true);
+            behaviour.SetScoreTip(ReactToTrait(behaviour.Trait));
+        }
+
+        return score;
+    }
+    
+    public void SetScoreTip(int value)
+    {
+        CivilianUI.UpdateScoreText(value);
+    }
     
     public void UpdateHappiness(int change)
     {
@@ -106,11 +176,13 @@ public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointe
     
     public void OnPointerEnter(PointerEventData eventData)
     {
-        CivillianUI.ShowTooltip();
+        CivilianUI.ShowTooltip();
+        SetScoreTipActive(true);
+        SetScoreTip(CalculateScoreTip());
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        CivillianUI.HideTooltip();
+        CivilianUI.HideTooltip();
     }
 }
