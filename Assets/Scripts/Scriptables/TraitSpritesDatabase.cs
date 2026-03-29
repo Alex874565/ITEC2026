@@ -5,4 +5,9 @@ using System.Collections.Generic;
 public class TraitSpritesDatabase : ScriptableObject
 {
     public List<TraitSprites> TraitSpritesList;
+    
+    public TraitSprites GetTraitSprites(Trait trait)
+    {
+        return TraitSpritesList.Find(x => x.Trait == trait);
+    }
 }

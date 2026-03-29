@@ -6,7 +6,7 @@ public class ModifiersManager : NetworkBehaviour
 {
     public static ModifiersManager Instance { get; private set; }
 
-    public NetworkList<TraitModifier> Modifiers;
+        public NetworkList<TraitModifier> Modifiers;
 
     [SerializeField] private AnimationCurve spawnInitialCurve = new AnimationCurve(
         new Keyframe(0f, 10f),
@@ -78,9 +78,10 @@ public class ModifiersManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (!IsServer) return;
-
-        InitializeModifiers();
+        if (IsServer)
+        {
+            InitializeModifiers();
+        }
     }
 
     private void InitializeModifiers()

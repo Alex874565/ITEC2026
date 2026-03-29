@@ -71,13 +71,16 @@ public class InventoryCivilianBehaviour : MonoBehaviour, IPointerClickHandler, I
     public int CalculateScoreTip()
     {
         List<CivilianBehaviour> behaviours = GridManager.Instance.GetAllCivilians();
-        int score = 0;
+        Debug.Log(behaviours.Count);
+        Debug.Log($"Calculating score tip for trait: {Trait}");
+        Debug.Log($"Modifiers for trait: {ModifiersManager.Instance.GetModifierDataForTrait(Trait).Spawn}");
+        int score = ModifiersManager.Instance.GetModifierDataForTrait(Trait).Spawn;
         foreach (var behaviour in behaviours)
         {
             if(behaviour == this) continue;
             behaviour.SetScoreTipActive(true);
             behaviour.SetScoreTip(behaviour.ReactToTrait(Trait));
-            score += ReactToTrait(behaviour.Trait.Trait);
+            score += ReactToTrait(behaviour.Trait.Value.Trait);
         }
 
         if (_playerInventory == null)
@@ -89,7 +92,7 @@ public class InventoryCivilianBehaviour : MonoBehaviour, IPointerClickHandler, I
         foreach (var behaviour in inventoryCivilians)
         {
             behaviour.SetScoreTipActive(true);
-            behaviour.SetScoreTip(ReactToTrait(behaviour.Trait));
+            behaviour.SetScoreTip(behaviour.ReactToTrait(Trait));
         }
 
         return score;
@@ -111,6 +114,23 @@ public class InventoryCivilianBehaviour : MonoBehaviour, IPointerClickHandler, I
         return change;
     }
 
+    public void DisableScoreTips()
+    {
+        List<CivilianBehaviour> behaviours = GridManager.Instance.GetAllCivilians();
+        foreach (var behaviour in behaviours)
+        {
+            if(!behaviour) continue;
+            behaviour.SetScoreTipActive(false);
+        }
+        
+        List<InventoryCivilianBehaviour> inventoryCivilians = _playerInventory.CivilianBehaviours;
+        foreach (var behaviour in inventoryCivilians)
+        {
+            if(!behaviour) continue;
+            behaviour.SetScoreTipActive(false);
+        }
+    }
+    
     public void DestroySelf()
     {
         if (isBeingDestroyed)
@@ -122,16 +142,22 @@ public class InventoryCivilianBehaviour : MonoBehaviour, IPointerClickHandler, I
     
     public void OnPointerClick(PointerEventData eventData)
     {
+        DisableScoreTips();
+        SetScoreTipActive(false);
         OnCivilianClicked?.Invoke(Index);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
         CivilianUI.ShowTooltip();
+        SetScoreTip(CalculateScoreTip());
+        SetScoreTipActive(true);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         CivilianUI.HideTooltip();
+        DisableScoreTips();
+        SetScoreTipActive(false);
     }
 }

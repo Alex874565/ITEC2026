@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cc5c22b801f411d9c0428ab539102e0, type: 3}
+  m_Name: TraitSpritesDatabase
+  m_EditorClassIdentifier: 
+  TraitSpritesList:
+  - {fileID: 11400000, guid: 80133c41601eaba45a004e751a9919fe, type: 2}
+  - {fileID: 11400000, guid: a45a1033a790b7449b71d9a5bc97815c, type: 2}
+  - {fileID: 11400000, guid: e34a00e21e8cacb4b8ae1b171f73ce98, type: 2}
+  - {fileID: 11400000, guid: 33f73775b78da9247a31ddd324ec14c1, type: 2}
+  - {fileID: 11400000, guid: 5a63129e458292c4a84f5a6d3fadaf4a, type: 2}
+  - {fileID: 11400000, guid: e4dee3753ac484d45995bec91221020b, type: 2}
+  - {fileID: 11400000, guid: b9ce3f47ad90c4143a9193d284f99a30, type: 2}

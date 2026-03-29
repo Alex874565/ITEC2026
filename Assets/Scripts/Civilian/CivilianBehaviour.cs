@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 
 public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    public TraitStruct Trait;
+    public NetworkVariable<TraitStruct> Trait;
     public NetworkList<TraitStruct> LikedTraits = new NetworkList<TraitStruct>();
     public NetworkList<TraitStruct> DislikedTraits = new NetworkList<TraitStruct>();
     
@@ -27,6 +27,7 @@ public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointe
             // CivillianUI.UpdateImage(newValue);
         };
 
+        Trait.OnValueChanged += (_, _) => RefreshUI();
         LikedTraits.OnListChanged += _ => RefreshUI();
         DislikedTraits.OnListChanged += _ => RefreshUI();
 
@@ -53,12 +54,13 @@ public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointe
         for (int i = 0; i < DislikedTraits.Count; i++)
             disliked[i] = DislikedTraits[i].Trait;
 
-        CivilianUI.Initialize(Trait.Trait, liked, disliked);
+        CivilianUI.Initialize(Trait.Value.Trait, liked, disliked);
+        Debug.Log($"UI refreshed for trait: {Trait.Value.Trait}, liked traits: {LikedTraits.Count}, disliked traits: {DislikedTraits.Count}");
     }
 
     public void Initialize(Trait trait, Trait[] likedTraits, Trait[] dislikedTraits)
     {
-        Trait = new TraitStruct
+        Trait.Value = new TraitStruct
         {
             Trait = trait
         };
@@ -79,7 +81,8 @@ public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointe
             });
         }
         
-        Debug.Log($"Civilian initialized with trait: {Trait.Trait}, liked traits: {LikedTraits.Count}, disliked traits: {DislikedTraits.Count}");
+        Debug.Log($"Civilian initialized with trait: {Trait.Value.Trait}, liked traits: {LikedTraits.Count}, disliked traits: {DislikedTraits.Count}");
+        RefreshUI();
     }
     
     public int ReactToTrait(TraitStruct trait)
@@ -118,7 +121,7 @@ public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointe
             change = ModifiersManager.Instance.GetModifierDataForTrait(trait).Negative;
         }
 
-        Happiness.Value += change;
+        //Happiness.Value += change;
         return change;
     }
 
@@ -132,12 +135,14 @@ public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointe
         List<CivilianBehaviour> behaviours = GridManager.Instance.GetAllCivilians();
         foreach (var behaviour in behaviours)
         {
+            if(!behaviour) continue;
             behaviour.SetScoreTipActive(false);
         }
         
         List<InventoryCivilianBehaviour> inventoryCivilians = _playerInventory.CivilianBehaviours;
         foreach (var behaviour in inventoryCivilians)
         {
+            if(!behaviour) continue;
             behaviour.SetScoreTipActive(false);
         }
     }
@@ -145,13 +150,13 @@ public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointe
     public int CalculateScoreTip()
     {
         List<CivilianBehaviour> behaviours = GridManager.Instance.GetAllCivilians();
-        int score = 0;
+        int score = ModifiersManager.Instance.GetModifierDataForTrait(Trait.Value.Trait).Spawn;
         foreach (var behaviour in behaviours)
         {
             if(behaviour == this) continue;
             behaviour.SetScoreTipActive(true);
-            behaviour.SetScoreTip(behaviour.ReactToTrait(Trait.Trait));
-            score += ReactToTrait(behaviour.Trait.Trait);
+            behaviour.SetScoreTip(behaviour.ReactToTrait(Trait.Value.Trait));
+            score += ReactToTrait(behaviour.Trait.Value.Trait);
         }
 
         if (_playerInventory == null)
@@ -163,7 +168,7 @@ public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointe
         foreach (var behaviour in inventoryCivilians)
         {
             behaviour.SetScoreTipActive(true);
-            behaviour.SetScoreTip(behaviour.ReactToTrait(behaviour.Trait));
+            behaviour.SetScoreTip(behaviour.ReactToTrait(Trait.Value.Trait));
         }
 
         return score;
@@ -189,6 +194,7 @@ public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointe
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        SetScoreTipActive(false);
         DisableScoreTips();
         CivilianUI.HideTooltip();
     }
