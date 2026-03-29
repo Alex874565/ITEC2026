@@ -17,6 +17,10 @@ public class LoseUI : MonoBehaviour
     [SerializeField] private int lvlReached;
     [SerializeField] private HeaderAnimator headerAnimator;
 
+    [Header("Lvl Audio")]
+    [SerializeField] private AudioSource lvlAudioSource;
+    [SerializeField] private AudioClip lvlCountingClip;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -87,13 +91,22 @@ public class LoseUI : MonoBehaviour
 
         lvlReachedText.text = "0";
 
+        // Create a temporary AudioSource for this counting
+        AudioSource tempSource = lvlReachedText.gameObject.AddComponent<AudioSource>();
+        tempSource.clip = lvlCountingClip;
+        tempSource.loop = true;
+        tempSource.playOnAwake = false;
+        tempSource.Play();
+
         // If lvlReached is 0, the tween finishes instantly.
         if (lvlReached <= 0) {
             lvlReachedText.text = "0";
             return;
         }
 
-        DOVirtual.Float(0, lvlReached, 1.2f, value =>
+        float duration = Mathf.Clamp(lvlReached * 0.05f, 0.5f, 2.5f);
+
+        DOVirtual.Float(0, lvlReached, duration, value =>
         {
             lvlReachedText.text = Mathf.RoundToInt(value).ToString();
         })
@@ -101,6 +114,9 @@ public class LoseUI : MonoBehaviour
         .SetUpdate(true) // Crucial if Time.timeScale is 0
         .OnComplete(() =>
         {
+            tempSource.Stop();
+            Destroy(tempSource); // clean up
+
             lvlReachedText.transform
                 .DOPunchScale(Vector3.one * 0.2f, 0.3f, 10, 1)
                 .SetUpdate(true);
