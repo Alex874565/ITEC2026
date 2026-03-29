@@ -11,6 +11,7 @@ public struct TraitModifier : INetworkSerializable, IEquatable<TraitModifier>
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref Trait);
+        serializer.SerializeValue(ref Spawn);
         serializer.SerializeValue(ref Positive);
         serializer.SerializeValue(ref Negative);
     }
@@ -18,6 +19,7 @@ public struct TraitModifier : INetworkSerializable, IEquatable<TraitModifier>
     public bool Equals(TraitModifier other)
     {
         return Trait == other.Trait &&
+               Spawn == other.Spawn &&
                Positive == other.Positive &&
                Negative == other.Negative;
     }
@@ -29,6 +31,6 @@ public struct TraitModifier : INetworkSerializable, IEquatable<TraitModifier>
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Trait, Positive, Negative);
+        return HashCode.Combine(Trait, Spawn, Positive, Negative);
     }
 }

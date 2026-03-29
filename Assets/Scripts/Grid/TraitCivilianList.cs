@@ -18,20 +18,19 @@ public struct TraitCivilianList : INetworkSerializable
         if (serializer.IsReader)
         {
             Civilians = new List<NetworkObjectReference>(count);
-
             for (int i = 0; i < count; i++)
             {
-                NetworkObjectReference civilian = default;
-                serializer.SerializeValue(ref civilian);
-                Civilians.Add(civilian);
+                NetworkObjectReference reference = default;
+                serializer.SerializeValue(ref reference);
+                Civilians.Add(reference);
             }
         }
         else
         {
             for (int i = 0; i < count; i++)
             {
-                NetworkObjectReference civilian = Civilians[i];
-                serializer.SerializeValue(ref civilian);
+                var reference = Civilians[i];
+                serializer.SerializeValue(ref reference);
             }
         }
     }

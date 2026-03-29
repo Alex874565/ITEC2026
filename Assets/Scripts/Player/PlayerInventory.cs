@@ -40,6 +40,7 @@ public class PlayerInventory : MonoBehaviour
         // Handle the logic for selecting the civilian, e.g., updating UI or player stats
         GridManager.Instance.RequestAddCivilian(selectedCivilian);
         GameManager.Instance.ChangeActivePlayer();
+        CivilianBehaviours.RemoveAt(index);
         selectedCivilian.DestroySelf();
     }
 

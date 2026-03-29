@@ -35,7 +35,8 @@ public class GridManager : NetworkBehaviour
         new ActiveTraitCivilians
         {
             TraitLists = new List<TraitCivilianList>()
-        });
+        }
+    );
 
     private void Awake()
     {
@@ -255,22 +256,48 @@ public class GridManager : NetworkBehaviour
         }
     }
     
+    private ActiveTraitCivilians CloneData(ActiveTraitCivilians source)
+    {
+        var clone = new ActiveTraitCivilians
+        {
+            TraitLists = new List<TraitCivilianList>()
+        };
+
+        if (source.TraitLists == null)
+            return clone;
+
+        foreach (var traitList in source.TraitLists)
+        {
+            clone.TraitLists.Add(new TraitCivilianList
+            {
+                Trait = traitList.Trait,
+                Civilians = traitList.Civilians != null
+                    ? new List<NetworkObjectReference>(traitList.Civilians)
+                    : new List<NetworkObjectReference>()
+            });
+        }
+
+        return clone;
+    }
+    
+    //[ClientRpc]
     public void AddCivilianToList(GameObject civilianObject)
     {
         CivilianBehaviour civilian = civilianObject.GetComponent<CivilianBehaviour>();
         NetworkObject networkObject = civilian.GetComponent<NetworkObject>();
 
-        var data = ActiveTraitCivilians.Value;
+        var data = CloneData(ActiveTraitCivilians.Value);
+
         if (data.TraitLists == null)
             data.TraitLists = new List<TraitCivilianList>();
 
-        int traitIndex = GetTraitIndex(data, civilian.Trait.Trait);
+        int traitIndex = GetTraitIndex(data, civilian.Trait.Value.Trait);
 
         if (traitIndex == -1)
         {
             TraitCivilianList newEntry = new TraitCivilianList
             {
-                Trait = civilian.Trait.Trait,
+                Trait = civilian.Trait.Value.Trait,
                 Civilians = new List<NetworkObjectReference>()
             };
 
@@ -279,7 +306,7 @@ public class GridManager : NetworkBehaviour
         }
         else
         {
-            TraitCivilianList entry = data.TraitLists[traitIndex];
+            var entry = data.TraitLists[traitIndex];
 
             if (entry.Civilians == null)
                 entry.Civilians = new List<NetworkObjectReference>();
@@ -308,15 +335,15 @@ public class GridManager : NetworkBehaviour
             return;
         }
 
-        int scoreChange = ModifiersManager.Instance.GetModifierDataForTrait(newCivilian.Trait.Trait).Spawn;
+        int scoreChange = ModifiersManager.Instance.GetModifierDataForTrait(newCivilian.Trait.Value.Trait).Spawn;
 
         foreach (CivilianBehaviour existingCivilian in GetAllCivilians())
         {
             if (existingCivilian == null || existingCivilian == newCivilian)
                 continue;
 
-            scoreChange += existingCivilian.ReactToTrait(newCivilian.Trait);
-            scoreChange += newCivilian.ReactToTrait(existingCivilian.Trait);
+            scoreChange += existingCivilian.ReactToTrait(newCivilian.Trait.Value);
+            scoreChange += newCivilian.ReactToTrait(existingCivilian.Trait.Value);
         }
 
         if (IsServer && scoreChange != 0)
