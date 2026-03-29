@@ -9,6 +9,8 @@ public class GridManager : NetworkBehaviour
 {
     public static GridManager Instance { get; private set; }
 
+    public AudioClip placeSFX;
+    
     [Header("Setup")]
     [SerializeField] private GameObject civilianPrefab;
     [SerializeField] private GameObject placeholderPrefab;
@@ -434,7 +436,16 @@ public class GridManager : NetworkBehaviour
             Debug.LogWarning("No available slot found.");
         }
 
+        PlaySpawnCivilianEffectsClientRpc();
+
         return behaviour;
+    }
+
+    [ClientRpc]
+    public void PlaySpawnCivilianEffectsClientRpc()
+    {
+        UIShaker.Instance.Shake();
+        AudioManager.Instance.PlaySFX(placeSFX);
     }
 
     private NetworkObject GetNextAvailableSlot()
