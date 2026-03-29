@@ -1,10 +1,10 @@
 ﻿public enum Trait
 {
-    Nerd,
-    Bully,
-    Athlete,
-    Artist,
-    Musician,
-    Gamer,
-    Fashionista,
+    Human,
+    Angel,
+    Devil,
+    Slime,
+    Vampire,
+    Zombie,
+    Ghost,
 }

@@ -6868,6 +6868,10 @@ PrefabInstance:
       propertyPath: m_HorizontalAlignment
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 652916969211148385, guid: 9a1b4cf5a090b464dbf965a811e6bb7f, type: 3}
+      propertyPath: m_text
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1884259670090642526, guid: 9a1b4cf5a090b464dbf965a811e6bb7f, type: 3}
       propertyPath: m_SizeDelta.y
       value: 75
@@ -6895,6 +6899,14 @@ PrefabInstance:
     - target: {fileID: 2534143076702289804, guid: 9a1b4cf5a090b464dbf965a811e6bb7f, type: 3}
       propertyPath: m_SizeDelta.y
       value: 75
+      objectReference: {fileID: 0}
+    - target: {fileID: 3186835003154341281, guid: 9a1b4cf5a090b464dbf965a811e6bb7f, type: 3}
+      propertyPath: m_text
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3335052758230743747, guid: 9a1b4cf5a090b464dbf965a811e6bb7f, type: 3}
+      propertyPath: m_text
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4191828813510862816, guid: 9a1b4cf5a090b464dbf965a811e6bb7f, type: 3}
       propertyPath: m_Pivot.x

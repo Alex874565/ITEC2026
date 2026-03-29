@@ -13,60 +13,85 @@ public class CivilianUI : MonoBehaviour
     public List<TextMeshProUGUI> LikedTraitsContainers;
     public List<TextMeshProUGUI> DislikedTraitsContainers;
     public TextMeshProUGUI ScoreText;
+    public GameObject ScoreObject;
+    public Animator animator;
 
     private Trait _trait;
-    
     private TraitSprites _traitSprites;
+
+    public float minActDelay = 2f;
+    public float maxActDelay = 5f;
+
+    private Coroutine actRoutine;
+
+    private void OnEnable()
+    {
+        actRoutine = StartCoroutine(ActRoutine());
+    }
+
+    private void OnDisable()
+    {
+        if (actRoutine != null)
+            StopCoroutine(actRoutine);
+    }
+
+    private System.Collections.IEnumerator ActRoutine()
+    {
+        while (true)
+        {
+            float delay = Random.Range(minActDelay, maxActDelay);
+            yield return new WaitForSeconds(delay);
+
+            if (animator != null)
+                animator.SetTrigger("Act");
+        }
+    }
     
     public void Initialize(Trait trait, Trait[] likedTraits, Trait[] dislikedTraits)
     {
         _trait = trait;
-        //_traitSprites = Database.GetTraitSprites(trait);
-        
-        //UpdateImage(0);
+        _traitSprites = Database.GetTraitSprites(trait);
+
+        ApplyVisuals();
 
         TraitContainer.text = _trait.ToString();
-        
-        for(int i = 0; i < LikedTraitsContainers.Count; i++)
+
+        for (int i = 0; i < LikedTraitsContainers.Count; i++)
         {
-            if(i < likedTraits.Length)
-            {
+            if (i < likedTraits.Length)
                 LikedTraitsContainers[i].text = likedTraits[i].ToString();
-            }
             else
-            {
                 LikedTraitsContainers[i].text = "";
-            }
-        }
-        
-        for(int i = 0; i < DislikedTraitsContainers.Count; i++)
-        {
-            if(i < dislikedTraits.Length)
-            {
-                DislikedTraitsContainers[i].text = dislikedTraits[i].ToString();
-            }
-            else
-            {
-                DislikedTraitsContainers[i].text = "";
-            }
         }
 
+        for (int i = 0; i < DislikedTraitsContainers.Count; i++)
+        {
+            if (i < dislikedTraits.Length)
+                DislikedTraitsContainers[i].text = dislikedTraits[i].ToString();
+            else
+                DislikedTraitsContainers[i].text = "";
+        }
     }
 
-    public void UpdateImage(int traitValue)
+    private void ApplyVisuals()
     {
-        if(traitValue < NeutralRange.x)
+        if (_traitSprites == null)
         {
-            Image.sprite = _traitSprites.AngrySprite;
+            Debug.LogWarning($"No TraitSprites found for trait {_trait}", this);
+            return;
         }
-        else if(traitValue > NeutralRange.y)
-        {
-            Image.sprite = _traitSprites.HappySprite;
-        }
-        else
-        {
-            Image.sprite = _traitSprites.NeutralSprite;
-        }
+
+        if (Image != null && _traitSprites.TraitSprite != null)
+            Image.sprite = _traitSprites.TraitSprite;
+
+        if (animator != null && _traitSprites.TraitAnimator != null)
+            animator.runtimeAnimatorController = _traitSprites.TraitAnimator;
+    }
+
+    public void PlayAct()
+    {
+        if (animator != null)
+            animator.SetTrigger("Act");
     }
 
     public void UpdateScoreText(int value)
@@ -76,7 +101,7 @@ public class CivilianUI : MonoBehaviour
 
     public void SetScoreTextActive(bool active)
     {
-        ScoreText.gameObject.SetActive(active);
+        ScoreObject.SetActive(active);
     }
 
     public void ShowTooltip()
