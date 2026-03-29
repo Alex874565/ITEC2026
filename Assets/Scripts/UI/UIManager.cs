@@ -99,7 +99,7 @@ public class UIManager : MonoBehaviour
         hud.Investment.text = $"{investmentReturnValue}";
         hud.Debt.text = $"{debtValue}";
 
-        Bank.SetActive(false);
+        Bank.GetComponent<EconomyUI>().Show();
 
         endWaveSequence = DOTween.Sequence();
 

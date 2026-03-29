@@ -12,6 +12,9 @@ public class EconomyUI : MonoBehaviour
     public EconomyOptionUI InvestOption;
     public EconomyOptionUI LoanOption;
     public EconomyContinueButton ContinueButton;
+
+    [SerializeField] private HeaderAnimator headerAnimator;
+    [SerializeField] private MenuStaggerAnimation stagger;
     
     private void OnEnable()
     {
@@ -58,5 +61,20 @@ public class EconomyUI : MonoBehaviour
     private void OnInvestmentReturnChanged(int oldValue, int newValue)
     {
         Return.text = newValue.ToString();
+    }
+
+    public void Show()
+    {
+        gameObject.SetActive(true);
+        headerAnimator.ShowHeader();
+        stagger.OpenMenu();
+    }
+
+    public void Hide()
+    {
+        stagger.CloseMenu(() =>
+        {
+            gameObject.SetActive(false);
+        });
     }
 }
