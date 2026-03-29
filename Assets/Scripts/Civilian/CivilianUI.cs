@@ -49,6 +49,7 @@ public class CivilianUI : MonoBehaviour
     
     public void Initialize(Trait trait, Trait[] likedTraits, Trait[] dislikedTraits)
     {
+        Debug.Log($"Initializing CivilianUI with trait: {trait}, liked traits: {likedTraits.Length}, disliked traits: {dislikedTraits.Length}");
         _trait = trait;
         _traitSprites = Database.GetTraitSprites(trait);
 

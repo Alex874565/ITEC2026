@@ -30,8 +30,6 @@ public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointe
         Trait.OnValueChanged += (_, _) => RefreshUI();
         LikedTraits.OnListChanged += _ => RefreshUI();
         DislikedTraits.OnListChanged += _ => RefreshUI();
-
-        RefreshUI();
     }
 
     private void ApplySlotIndex(int slotIndex)

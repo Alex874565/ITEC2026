@@ -30,15 +30,16 @@ public class SettingsUI : MonoBehaviour
         // Start hidden (UIElementAnimator already sets alpha 0 & scale 0)
         gameObject.SetActive(false);
 
-        // var audio = ServiceLocator.Instance.AudioManager;
+        var audio = AudioManager.Instance;
+        Debug.Log(audio);
 
-        // masterSlider.value = audio.GetMasterVolume();
-        // musicSlider.value = audio.GetMusicVolume();
-        // sfxSlider.value = audio.GetSFXVolume();
+        masterSlider.value = audio.GetMasterVolume();
+        musicSlider.value = audio.GetMusicVolume();
+        sfxSlider.value = audio.GetSFXVolume();
 
-        // masterSlider.onValueChanged.AddListener(audio.SetMasterVolume);
-        // musicSlider.onValueChanged.AddListener(audio.SetMusicVolume);
-        // sfxSlider.onValueChanged.AddListener(audio.SetSFXVolume);
+        masterSlider.onValueChanged.AddListener(audio.SetMasterVolume);
+        musicSlider.onValueChanged.AddListener(audio.SetMusicVolume);
+        sfxSlider.onValueChanged.AddListener(audio.SetSFXVolume);
     }
 
     public void Show()
