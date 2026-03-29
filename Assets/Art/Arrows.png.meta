@@ -1,20 +1,13 @@
 fileFormatVersion: 2
-<<<<<<< HEAD
-guid: 150fdc048b3569f4188d6d26120d05d5
-=======
-guid: f05567e069a2eab47ab95c7c672a15bd
->>>>>>> f9a120453ff41cee5dde71026c6716c23604f108
+guid: 542aaa21ff389194bb16fe44601717dc
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8003260396191338441
-    second: coins_0
+      213: -1033766676993296678
+    second: Arrows_0
   - first:
-      213: 2154074400079490951
-    second: coins_1
-  - first:
-      213: -8722020019358736109
-    second: coins_2
+      213: 5287939958834139383
+    second: Arrows_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -47,11 +40,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-<<<<<<< HEAD
-    filterMode: 0
-=======
     filterMode: 1
->>>>>>> f9a120453ff41cee5dde71026c6716c23604f108
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -89,11 +78,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-<<<<<<< HEAD
-    textureCompression: 0
-=======
     textureCompression: 1
->>>>>>> f9a120453ff41cee5dde71026c6716c23604f108
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -115,9 +100,6 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-<<<<<<< HEAD
-    buildTarget: iOS
-=======
     buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -132,7 +114,6 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
     buildTarget: WebGL
->>>>>>> f9a120453ff41cee5dde71026c6716c23604f108
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -148,13 +129,35 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: coins_0
+      name: Arrows_0
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 33
+        width: 22
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad6bd253fa257a1f0800000000000000
+      internalID: -1033766676993296678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arrows_1
       rect:
         serializedVersion: 2
         x: 1
-        y: 33
+        y: 5
         width: 30
-        height: 30
+        height: 22
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -163,52 +166,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9cfcfef5dea411f60800000000000000
-      internalID: 8003260396191338441
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: coins_1
-      rect:
-        serializedVersion: 2
-        x: 33
-        y: 33
-        width: 31
-        height: 31
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 78f208c014fc4ed10800000000000000
-      internalID: 2154074400079490951
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: coins_2
-      rect:
-        serializedVersion: 2
-        x: 1
-        y: 1
-        width: 31
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 311e64ee00925f680800000000000000
-      internalID: -8722020019358736109
+      spriteID: 7f017e73069826940800000000000000
+      internalID: 5287939958834139383
       vertices: []
       indices: 
       edges: []
@@ -227,9 +186,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      coins_0: 8003260396191338441
-      coins_1: 2154074400079490951
-      coins_2: -8722020019358736109
+      Arrows_0: -1033766676993296678
+      Arrows_1: 5287939958834139383
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -12,6 +12,8 @@ public class InventoryCivilianBehaviour : MonoBehaviour, IPointerClickHandler, I
     public Trait Trait;
     public List<Trait> LikedTraits;
     public List<Trait> DislikedTraits;
+
+    public AudioClip click;
     
     public event Action<int> OnCivilianClicked;
     
@@ -144,6 +146,7 @@ public class InventoryCivilianBehaviour : MonoBehaviour, IPointerClickHandler, I
     {
         DisableScoreTips();
         SetScoreTipActive(false);
+        AudioManager.Instance.PlaySFX(click);
         OnCivilianClicked?.Invoke(Index);
     }
 
