@@ -134,6 +134,12 @@ public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointe
         {
             behaviour.SetScoreTipActive(false);
         }
+        
+        List<InventoryCivilianBehaviour> inventoryCivilians = _playerInventory.CivilianBehaviours;
+        foreach (var behaviour in inventoryCivilians)
+        {
+            behaviour.SetScoreTipActive(false);
+        }
     }
     
     public int CalculateScoreTip()
@@ -157,7 +163,7 @@ public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointe
         foreach (var behaviour in inventoryCivilians)
         {
             behaviour.SetScoreTipActive(true);
-            behaviour.SetScoreTip(ReactToTrait(behaviour.Trait));
+            behaviour.SetScoreTip(behaviour.ReactToTrait(behaviour.Trait));
         }
 
         return score;
@@ -177,12 +183,13 @@ public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointe
     public void OnPointerEnter(PointerEventData eventData)
     {
         CivilianUI.ShowTooltip();
-        SetScoreTipActive(true);
         SetScoreTip(CalculateScoreTip());
+        SetScoreTipActive(true);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        DisableScoreTips();
         CivilianUI.HideTooltip();
     }
 }
