@@ -30,7 +30,7 @@ public class LoseUI : MonoBehaviour
         hubButton.onClick.AddListener(() =>
         {
             Debug.Log("hub");
-            SceneManager.LoadScene("HubScene");
+            //SceneManager.LoadScene("HubScene");
         });
     }
 

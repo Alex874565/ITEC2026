@@ -489,6 +489,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5400807822706043965}
+  - component: {fileID: 4672844737937116137}
   - component: {fileID: 8024193498046463118}
   - component: {fileID: 2493709244133938610}
   m_Layer: 5
@@ -517,6 +518,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &4672844737937116137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2651209650140794507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac3466251d9001846853f303030c433e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverMultiplier: 1.08
+  pressMultiplier: 0.9
+  duration: 0.15
+  originalScale: {x: 1, y: 1, z: 1}
 --- !u!222 &8024193498046463118
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1472,6 +1489,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8605231537596828670}
+  - component: {fileID: 2188371669500265388}
   - component: {fileID: 5558716956317397244}
   - component: {fileID: 8979375023564554004}
   m_Layer: 5
@@ -1500,6 +1518,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2188371669500265388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6333549673738403576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac3466251d9001846853f303030c433e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverMultiplier: 1.08
+  pressMultiplier: 0.9
+  duration: 0.15
+  originalScale: {x: 1, y: 1, z: 1}
 --- !u!222 &5558716956317397244
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1697,6 +1731,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2883339970763459854}
+  - component: {fileID: 7558821250968908376}
   - component: {fileID: 5239764247021433379}
   - component: {fileID: 1136177970272411091}
   m_Layer: 5
@@ -1725,6 +1760,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &7558821250968908376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6961885011624052329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac3466251d9001846853f303030c433e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverMultiplier: 1.08
+  pressMultiplier: 0.9
+  duration: 0.15
+  originalScale: {x: 1, y: 1, z: 1}
 --- !u!222 &5239764247021433379
 CanvasRenderer:
   m_ObjectHideFlags: 0
