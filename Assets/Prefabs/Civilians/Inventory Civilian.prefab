@@ -516,6 +516,7 @@ MonoBehaviour:
   Trait: 0
   LikedTraits: 
   DislikedTraits: 
+  click: {fileID: 8300000, guid: 0751df3ee4ad0e64e9845e464a8ea908, type: 3}
 --- !u!114 &5797876414268696963
 MonoBehaviour:
   m_ObjectHideFlags: 0
