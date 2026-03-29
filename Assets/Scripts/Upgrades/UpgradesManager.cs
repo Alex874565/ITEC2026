@@ -207,6 +207,6 @@ public class UpgradesManager : NetworkBehaviour
     private void EndUpgradePhaseClientRpc()
     {
         UIManager.Instance.Upgrades.SetActive(false);
-        // GameManager.Instance.StartNextRound();
+        AudioManager.Instance.PlayMenuChangeSFX();
     }
 }

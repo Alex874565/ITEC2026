@@ -1,6 +1,8 @@
 ﻿using DG.Tweening;
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -12,6 +14,7 @@ public class UIManager : MonoBehaviour
     public GameObject Bank;
     public GameObject Tutorial;
     public UIButtonVisual startButton;
+    public Button backButton;
     [SerializeField] private TitleAnimation titleAnimation;
     
     [Header("End Wave Animation")]
@@ -43,6 +46,12 @@ public class UIManager : MonoBehaviour
         if (GameManager.Instance != null)
         {
             GameManager.Instance.TotalPoints.OnValueChanged += OnTotalPointsChanged;
+        }
+
+        if (backButton != null)
+        {
+            backButton.onClick.RemoveAllListeners();
+            backButton.onClick.AddListener(() => { SceneManager.LoadScene("MainMenu"); });
         }
     }
     
