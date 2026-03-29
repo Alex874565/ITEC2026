@@ -207,6 +207,17 @@ public class GridManager : NetworkBehaviour
             return;
         }
 
+        // End the wave immediately if there are no free slots left.
+        if (GetNextAvailableSlot() == null)
+        {
+            Debug.Log("No more available slots. Ending wave.");
+        
+            if (!isClearingGrid)
+                StartCoroutine(EndWaveAfterLastCivilianSpawnRoutine());
+
+            return;
+        }
+
         CivilianBehaviour civilian = SpawnCivilian(trait, likedTraits, dislikedTraits);
         if (civilian == null)
             return;
@@ -216,7 +227,6 @@ public class GridManager : NetworkBehaviour
         NetworkObject networkObject = civilian.GetComponent<NetworkObject>();
         ApplyTraitReactionsClientRpc(new NetworkObjectReference(networkObject));
 
-        // Wave completion must be checked AFTER adding the civilian to the list.
         if (HasReachedTargetCount() && !isClearingGrid)
         {
             StartCoroutine(EndWaveAfterLastCivilianSpawnRoutine());
@@ -406,6 +416,13 @@ public class GridManager : NetworkBehaviour
 
     public CivilianBehaviour SpawnCivilian(Trait trait, Trait[] likedTraits, Trait[] dislikedTraits)
     {
+        NetworkObject slotNO = GetNextAvailableSlot();
+        if (slotNO == null)
+        {
+            Debug.LogWarning("No available slot found.");
+            return null;
+        }
+
         GameObject civilian = Instantiate(civilianPrefab);
 
         CivilianBehaviour behaviour = civilian.GetComponent<CivilianBehaviour>();
@@ -419,22 +436,9 @@ public class GridManager : NetworkBehaviour
         }
 
         civilianNO.Spawn();
-        
         behaviour.Initialize(trait, likedTraits, dislikedTraits);
 
-        NetworkObject slotNO = GetNextAvailableSlot();
-        if (slotNO != null)
-        {
-            PlaceCivilianInSlot(civilianNO, slotNO);
-        }
-        else
-        {
-            var parentNO = civilianContainer.GetComponent<NetworkObject>();
-            if (parentNO != null)
-                civilianNO.TrySetParent(parentNO, false);
-
-            Debug.LogWarning("No available slot found.");
-        }
+        PlaceCivilianInSlot(civilianNO, slotNO);
 
         PlaySpawnCivilianEffectsClientRpc();
 

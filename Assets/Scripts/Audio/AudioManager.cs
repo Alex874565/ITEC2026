@@ -25,16 +25,21 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
-        if(Instance != null && Instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        SetMusicVolume(PlayerPrefs.GetFloat("MusicVolume", .5f));
-        SetSFXVolume(PlayerPrefs.GetFloat("SFXVolume", .5f));
-        SetMasterVolume(PlayerPrefs.GetFloat("MasterVolume", .5f));
+
+        musicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
+        sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 0.5f);
+        masterVolume = PlayerPrefs.GetFloat("MasterVolume", 0.5f);
+
+        MusicSource.volume = 0f;
+        ApplyVolumes();
     }
     
     private void Start()
@@ -55,18 +60,17 @@ public class AudioManager : MonoBehaviour
 
     public void PlayMusic(AudioClip clip)
     {
-        Debug.Log("PLAY MUSIC CALLED");
-        Debug.Log(clip);
-        Debug.Log(currentMusic);
         if (clip == null || currentMusic == clip) return;
+
         currentMusic = clip;
 
         MusicSource.DOKill();
         MusicSource.DOFade(0f, 0.5f).SetUpdate(true).OnComplete(() =>
         {
             MusicSource.clip = clip;
+            MusicSource.volume = 0f;
             MusicSource.Play();
-            MusicSource.DOFade(musicVolume * masterVolume, 0.5f).SetUpdate(true);
+            MusicSource.DOFade(1f, 0.5f).SetUpdate(true);
         });
     }
     
@@ -79,7 +83,7 @@ public class AudioManager : MonoBehaviour
             MusicSource.Stop();
             MusicSource.clip = null;
             currentMusic = null;
-            MusicSource.volume = musicVolume * masterVolume;
+            MusicSource.volume = 1f;
         });
     }
 

@@ -2050,6 +2050,7 @@ MonoBehaviour:
   Bank: {fileID: 0}
   Tutorial: {fileID: 0}
   startButton: {fileID: 1794751944}
+  backButton: {fileID: 0}
   titleAnimation: {fileID: 503320797}
   bonusCountDuration: 0.8
   pointsCountDuration: 0.8
@@ -2623,9 +2624,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300000, guid: 72911edfc90e79443b8e52c9087c56b2, type: 3}
     - target: {fileID: 1729465973336657873, guid: c065a50992563ac45acd61e4704b2a54, type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1729465973336657873, guid: c065a50992563ac45acd61e4704b2a54, type: 3}
       propertyPath: OutputAudioMixerGroup
       value: 
       objectReference: {fileID: -5405070831369650125, guid: f2cfbbe6c12f9444486f86460a6445fc, type: 2}
+    - target: {fileID: 2038217583987651423, guid: c065a50992563ac45acd61e4704b2a54, type: 3}
+      propertyPath: Loop
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2038217583987651423, guid: c065a50992563ac45acd61e4704b2a54, type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2038217583987651423, guid: c065a50992563ac45acd61e4704b2a54, type: 3}
       propertyPath: OutputAudioMixerGroup
       value: 

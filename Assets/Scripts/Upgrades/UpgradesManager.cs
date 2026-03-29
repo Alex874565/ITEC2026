@@ -100,6 +100,21 @@ public class UpgradesManager : NetworkBehaviour
         modifiersCount = Random.Range(1, 4);
         for (int i = 0; i < modifiersCount; i++)
             UpgradeSlot3.Add(ModifiersManager.Instance.GenerateRandomUpgrade());
+
+        DebugSlot("SLOT 1", UpgradeSlot1);
+        DebugSlot("SLOT 2", UpgradeSlot2);
+        DebugSlot("SLOT 3", UpgradeSlot3);
+    }
+
+    private void DebugSlot(string name, NetworkList<ModifierUpgrade> slot)
+    {
+        string s = $"{name}: ";
+        for (int i = 0; i < slot.Count; i++)
+        {
+            var u = slot[i];
+            s += $"[{u.Trait} | {u.Type} | {u.Value}] ";
+        }
+        Debug.Log(s);
     }
 
     [ServerRpc(RequireOwnership = false)]

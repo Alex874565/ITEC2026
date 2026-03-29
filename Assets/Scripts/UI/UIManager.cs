@@ -108,7 +108,7 @@ public class UIManager : MonoBehaviour
         hud.Points.text = $"{visiblePoints}";
         hud.Investment.text = $"{investmentReturnValue}";
         hud.Debt.text = $"{debtValue}";
-
+        
         Bank.GetComponent<EconomyUI>().Show();
 
         endWaveSequence = DOTween.Sequence();

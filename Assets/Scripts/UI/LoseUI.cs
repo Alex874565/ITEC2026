@@ -33,15 +33,14 @@ public class LoseUI : MonoBehaviour
 
         hubButton.onClick.AddListener(() =>
         {
-            Debug.Log("hub");
-            //SceneManager.LoadScene("HubScene");
+            SceneManager.LoadScene("MainMenu");
         });
     }
 
     private void Start()
     {
-        //gameObject.SetActive(false);
-        LoseUI.Instance.Show(lvlReached);
+        gameObject.SetActive(false);
+        //LoseUI.Instance.Show(lvlReached);
     }
 
     public void Hide()

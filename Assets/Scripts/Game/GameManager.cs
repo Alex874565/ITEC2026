@@ -170,6 +170,7 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     public void EndGameClientRpc()
     {
+        LoseUI.Instance.Show(CurrentWave.Value);
     }
 
     private void ToggleUIs(bool oldValue, bool newValue)

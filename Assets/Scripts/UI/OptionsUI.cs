@@ -51,6 +51,12 @@ public class OptionsUI : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    private void OnDestroy()
+    {
+        GameManager.Instance.OnOptionsActive -= GameManager_OnOptionsActive;
+        GameManager.Instance.OnOptionsInactive -= GameManager_OnOptionsInactive;
+    }
+
     private void GameManager_OnOptionsInactive(object sender, EventArgs e)
     {
         Hide();
