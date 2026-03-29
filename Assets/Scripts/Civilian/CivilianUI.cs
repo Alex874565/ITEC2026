@@ -97,7 +97,19 @@ public class CivilianUI : MonoBehaviour
 
     public void UpdateScoreText(int value)
     {
-        ScoreText.text = value.ToString();
+        string color;
+        if (value > 0)
+        {
+            color = "#66FF66";
+        }else if (value < 0)
+        {
+            color = "#FF5252";
+        }
+        else
+        {
+            color = "white";
+        }
+        ScoreText.text = $"<color={color}>{value}</color>";
     }
 
     public void SetScoreTextActive(bool active)

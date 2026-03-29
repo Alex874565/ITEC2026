@@ -168,9 +168,6 @@ public class UpgradeOptionUI : OptionUI
     {
         bool isPositive = upgrade.Value > 0;
 
-        if (upgrade.Type == ModifierType.Dislike)
-            isPositive = !isPositive;
-
         string color = isPositive ? "#66FF66" : "#FF5252";
         string signedValue = upgrade.Value > 0 ? $"+{upgrade.Value}" : upgrade.Value.ToString();
         string coloredValue = $"<color={color}>{signedValue}</color>";

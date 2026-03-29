@@ -144,6 +144,7 @@ public class InventoryCivilianBehaviour : MonoBehaviour, IPointerClickHandler, I
     
     public void OnPointerClick(PointerEventData eventData)
     {
+        gameObject.transform.localScale = Vector3.one * 1.2f; // Reset scale on click
         DisableScoreTips();
         SetScoreTipActive(false);
         AudioManager.Instance.PlaySFX(click);
@@ -152,6 +153,7 @@ public class InventoryCivilianBehaviour : MonoBehaviour, IPointerClickHandler, I
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        gameObject.transform.localScale = Vector3.one * 1.1f; // Slightly enlarge the civilian for visual feedback
         CivilianUI.ShowTooltip();
         SetScoreTip(CalculateScoreTip());
         SetScoreTipActive(true);
@@ -159,6 +161,7 @@ public class InventoryCivilianBehaviour : MonoBehaviour, IPointerClickHandler, I
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        gameObject.transform.localScale = Vector3.one; // Reset scale
         CivilianUI.HideTooltip();
         DisableScoreTips();
         SetScoreTipActive(false);

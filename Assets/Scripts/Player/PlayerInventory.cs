@@ -41,6 +41,10 @@ public class PlayerInventory : MonoBehaviour
         GridManager.Instance.RequestAddCivilian(selectedCivilian);
         GameManager.Instance.ChangeActivePlayer();
         CivilianBehaviours.RemoveAt(index);
+        for (int i = 0; i < CivilianBehaviours.Count; i++)
+        {
+            CivilianBehaviours[i].Index = i; // you implement this
+        }
         selectedCivilian.DestroySelf();
     }
 

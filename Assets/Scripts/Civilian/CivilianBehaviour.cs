@@ -185,6 +185,7 @@ public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointe
     
     public void OnPointerEnter(PointerEventData eventData)
     {
+        gameObject.transform.localScale = Vector3.one * 1.1f;
         CivilianUI.ShowTooltip();
         SetScoreTip(CalculateScoreTip());
         SetScoreTipActive(true);
@@ -192,6 +193,7 @@ public class CivilianBehaviour : NetworkBehaviour, IPointerEnterHandler, IPointe
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        gameObject.transform.localScale = Vector3.one;
         SetScoreTipActive(false);
         DisableScoreTips();
         CivilianUI.HideTooltip();
