@@ -29,8 +29,16 @@ public class MenuStaggerAnimation : MonoBehaviour
     {
         foreach (var button in buttons)
         {
-            originalScales[button] = button.localScale; // save original
-            button.localScale = Vector3.zero; // hide
+            originalScales[button] = button.localScale;
+
+            // 🔥 Tell button its REAL scale BEFORE we zero it
+            var anim = button.GetComponent<UIButtonAnimation>();
+            if (anim != null)
+            {
+                anim.SetBaseScale(originalScales[button]);
+            }
+
+            button.localScale = Vector3.zero;
         }
     }
 

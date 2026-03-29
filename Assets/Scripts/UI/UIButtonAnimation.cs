@@ -22,7 +22,11 @@ public class UIButtonAnimation : MonoBehaviour,
     private void Awake()
     {
         button = GetComponent<Button>();
-        originalScale = transform.localScale;
+
+        if (originalScale == Vector3.zero)
+        {
+            originalScale = Vector3.one; // fallback
+        }
     }
 
     public void SetBaseScale(Vector3 scale)
