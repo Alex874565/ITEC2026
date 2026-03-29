@@ -231,8 +231,7 @@ public class ModifiersManager : NetworkBehaviour
         {
             Trait = modifier.Trait,
             Type = type,
-            Value = value,
-            Price = price
+            Value = value
         };
     }
 

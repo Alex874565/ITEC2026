@@ -1,17 +1,18 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
-public class EconomyUI : MonoBehaviour
+public class UpgradesUI : MonoBehaviour
 {
+    public UpgradeOptionUI Slot1;
+    public UpgradeOptionUI Slot2;
+    public UpgradeOptionUI Slot3;
+    public EconomyContinueButton ContinueButton;
+
     public TextMeshProUGUI Money;
     public TextMeshProUGUI Return;
     public TextMeshProUGUI Debt;
-    
-    public EconomyOptionUI InvestOption;
-    public EconomyOptionUI LoanOption;
-    public EconomyContinueButton ContinueButton;
     
     private void OnEnable()
     {
@@ -21,20 +22,11 @@ public class EconomyUI : MonoBehaviour
 
         OnTotalPointsChanged(GameManager.Instance.TotalPoints.Value, GameManager.Instance.TotalPoints.Value);
         OnDebtChanged(GameManager.Instance.Debt.Value, GameManager.Instance.Debt.Value);
-        OnInvestmentReturnChanged(GameManager.Instance.Debt.Value, GameManager.Instance.Debt.Value);
+        OnInvestmentReturnChanged(GameManager.Instance.InvestmentReturn.Value, GameManager.Instance.InvestmentReturn.Value);
         
-        // Just give the references
-        BankManager.Instance.InvestOption = InvestOption;
-        BankManager.Instance.LoanOption = LoanOption;
-        BankManager.Instance.ContinueButton = ContinueButton;
-
-        // Initialize the UI logic
-        InvestOption.Initialize();
-        LoanOption.Initialize();
-
         if (NetworkManager.Singleton.IsServer)
         {
-            BankManager.Instance.Initialize();
+            UpgradesManager.Instance.Initialize();
         }
     }
 
@@ -45,7 +37,7 @@ public class EconomyUI : MonoBehaviour
         GameManager.Instance.InvestmentReturn.OnValueChanged -= OnInvestmentReturnChanged;
     }
 
-    private void OnTotalPointsChanged(int  oldValue, int newValue)
+    private void OnTotalPointsChanged(int oldValue, int newValue)
     {
         Money.text = newValue.ToString();
     }
@@ -58,5 +50,13 @@ public class EconomyUI : MonoBehaviour
     private void OnInvestmentReturnChanged(int oldValue, int newValue)
     {
         Return.text = newValue.ToString();
+    }
+    
+    public void InitializeUI()
+    {
+        Slot1.Initialize();
+        Slot2.Initialize();
+        Slot3.Initialize();
+        ContinueButton.InitializeForUpgrades();
     }
 }

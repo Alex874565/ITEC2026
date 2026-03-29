@@ -25,6 +25,10 @@ public class GridManager : NetworkBehaviour
     private Transform civilianContainer;
     private bool isClearingGrid;
 
+    private Coroutine spawnPlaceholdersCoroutine;
+    private int waveGeneration;
+    private bool isSpawningPlaceholders;
+    
     public int CiviliansTargetCount;
 
     public NetworkVariable<ActiveTraitCivilians> ActiveTraitCivilians = new(
@@ -81,21 +85,46 @@ public class GridManager : NetworkBehaviour
         if (!IsServer)
             return;
 
+        waveGeneration++;
         CiviliansTargetCount = newValue + 1;
-        StartCoroutine(SpawnPlaceholdersRoutine(CiviliansTargetCount));
+
+        StopPlaceholderSpawnRoutine();
+
+        spawnPlaceholdersCoroutine = StartCoroutine(SpawnPlaceholdersRoutine(CiviliansTargetCount, waveGeneration));
+    }
+    
+    private void StopPlaceholderSpawnRoutine()
+    {
+        if (spawnPlaceholdersCoroutine != null)
+        {
+            StopCoroutine(spawnPlaceholdersCoroutine);
+            spawnPlaceholdersCoroutine = null;
+        }
+
+        isSpawningPlaceholders = false;
     }
 
-    private IEnumerator SpawnPlaceholdersRoutine(int count)
+    private IEnumerator SpawnPlaceholdersRoutine(int count, int generation)
     {
+        isSpawningPlaceholders = true;
+
         var parentNO = civilianContainer.GetComponent<NetworkObject>();
         if (parentNO == null)
         {
             Debug.LogError("civilianContainer must have a NetworkObject.");
+            isSpawningPlaceholders = false;
             yield break;
         }
 
         for (int i = 0; i < count; i++)
         {
+            if (!IsServer || isClearingGrid || generation != waveGeneration)
+            {
+                isSpawningPlaceholders = false;
+                spawnPlaceholdersCoroutine = null;
+                yield break;
+            }
+
             GameObject placeholder = Instantiate(placeholderPrefab);
             placeholder.name = $"Placeholder_{i}";
 
@@ -106,6 +135,8 @@ public class GridManager : NetworkBehaviour
             {
                 Debug.LogError("Placeholder prefab must have NetworkObject and CivilianSlot.");
                 Destroy(placeholder);
+                isSpawningPlaceholders = false;
+                spawnPlaceholdersCoroutine = null;
                 yield break;
             }
 
@@ -119,10 +150,14 @@ public class GridManager : NetworkBehaviour
 
             yield return new WaitForSeconds(placeholderAppearStepDelay);
         }
+
+        isSpawningPlaceholders = false;
+        spawnPlaceholdersCoroutine = null;
     }
 
     public void RequestAddCivilian(InventoryCivilianBehaviour inventoryCivilian)
     {
+        
         if (inventoryCivilian == null)
         {
             Debug.LogError("RequestAddCivilian: inventoryCivilian is null.");
@@ -181,10 +216,45 @@ public class GridManager : NetworkBehaviour
         // Wave completion must be checked AFTER adding the civilian to the list.
         if (HasReachedTargetCount() && !isClearingGrid)
         {
-            StartCoroutine(ClearGridRoutine(true));
+            StartCoroutine(EndWaveAfterLastCivilianSpawnRoutine());
+        }
+    }
+    
+    private IEnumerator EndWaveAfterLastCivilianSpawnRoutine()
+    {
+        if (!IsServer || isClearingGrid)
+            yield break;
+
+        yield return new WaitForSeconds(placeAnimDuration + 0.1f);
+
+        if (!IsServer || isClearingGrid)
+            yield break;
+
+        if (HasReachedTargetCount())
+        {
+            GameManager.Instance.EndWave();
         }
     }
 
+    private IEnumerator ClearAfterLastCivilianSpawnRoutine()
+    {
+        if (!IsServer || isClearingGrid)
+            yield break;
+
+        // Wait for the place animation to finish.
+        // Small extra buffer helps because the client animation starts after the RPC arrives.
+        yield return new WaitForSeconds(placeAnimDuration + 0.1f);
+
+        if (!IsServer || isClearingGrid)
+            yield break;
+
+        // Make sure the state is still valid.
+        if (HasReachedTargetCount())
+        {
+            StartCoroutine(ClearGridRoutine(true));
+        }
+    }
+    
     public void AddCivilianToList(GameObject civilianObject)
     {
         CivilianBehaviour civilian = civilianObject.GetComponent<CivilianBehaviour>();
@@ -298,6 +368,12 @@ public class GridManager : NetworkBehaviour
 
         return civilians;
     }
+    
+    public float GetEstimatedClearDuration()
+    {
+        int childCount = civilianContainer != null ? civilianContainer.childCount : 0;
+        return (childCount * clearStepDelay) + clearAnimDuration + 0.1f;
+    }
 
     public CivilianBehaviour SpawnCivilian(Trait trait, Trait[] likedTraits, Trait[] dislikedTraits)
     {
@@ -313,8 +389,9 @@ public class GridManager : NetworkBehaviour
             return null;
         }
 
-        behaviour.Initialize(trait, likedTraits, dislikedTraits);
         civilianNO.Spawn();
+        
+        behaviour.Initialize(trait, likedTraits, dislikedTraits);
 
         NetworkObject slotNO = GetNextAvailableSlot();
         if (slotNO != null)
@@ -399,6 +476,9 @@ public class GridManager : NetworkBehaviour
             yield break;
 
         isClearingGrid = true;
+        waveGeneration++;
+
+        StopPlaceholderSpawnRoutine();
 
         int childCount = civilianContainer != null ? civilianContainer.childCount : 0;
 
@@ -410,6 +490,8 @@ public class GridManager : NetworkBehaviour
         for (int i = civilianContainer.childCount - 1; i >= 0; i--)
         {
             Transform child = civilianContainer.GetChild(i);
+            if (child == null) continue;
+
             NetworkObject no = child.GetComponent<NetworkObject>();
 
             if (no != null && no.IsSpawned)
@@ -536,12 +618,12 @@ public class GridManager : NetworkBehaviour
             Image image = child.GetComponent<Image>();
             if (image != null)
             {
-                image.DOFade(0f, clearAnimDuration * 0.85f);
+                image.DOFade(0f, animDuration * 0.85f);
             }
 
             Sequence seq = DOTween.Sequence();
-            seq.Append(child.DOScale(clearEndScale, clearAnimDuration * 0.4f).SetEase(Ease.OutSine));
-            seq.Append(child.DOScale(0f, clearAnimDuration * 0.6f).SetEase(Ease.InCubic));
+            seq.Append(child.DOScale(clearEndScale, animDuration * 0.4f).SetEase(Ease.OutSine));
+            seq.Append(child.DOScale(0f, animDuration * 0.6f).SetEase(Ease.InCubic));
 
             yield return new WaitForSeconds(stepDelay);
         }

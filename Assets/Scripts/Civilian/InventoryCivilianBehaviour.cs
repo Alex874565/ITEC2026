@@ -14,6 +14,8 @@ public class InventoryCivilianBehaviour : MonoBehaviour, IPointerClickHandler, I
     public List<Trait> DislikedTraits;
     
     public event Action<int> OnCivilianClicked;
+    
+    private PlayerInventory _playerInventory;
 
     private void Awake()
     {
@@ -54,16 +56,73 @@ public class InventoryCivilianBehaviour : MonoBehaviour, IPointerClickHandler, I
         CivilianUI.Initialize(Trait, LikedTraits.ToArray(), DislikedTraits.ToArray());
     }
     
+    private bool isBeingDestroyed;
+
+    public void SetScoreTipActive(bool active)
+    {
+        CivilianUI.SetScoreTextActive(active);
+    }
+    
+    public void SetScoreTip(int score)
+    {
+        CivilianUI.UpdateScoreText(score);
+    }
+
+    public int CalculateScoreTip()
+    {
+        List<CivilianBehaviour> behaviours = GridManager.Instance.GetAllCivilians();
+        int score = 0;
+        foreach (var behaviour in behaviours)
+        {
+            if(behaviour == this) continue;
+            behaviour.SetScoreTipActive(true);
+            behaviour.SetScoreTip(behaviour.ReactToTrait(Trait));
+            score += ReactToTrait(behaviour.Trait.Trait);
+        }
+
+        if (_playerInventory == null)
+        {
+            _playerInventory = FindFirstObjectByType<PlayerInventory>();
+        }
+
+        List<InventoryCivilianBehaviour> inventoryCivilians = _playerInventory.CivilianBehaviours;
+        foreach (var behaviour in inventoryCivilians)
+        {
+            behaviour.SetScoreTipActive(true);
+            behaviour.SetScoreTip(ReactToTrait(behaviour.Trait));
+        }
+
+        return score;
+    }
+    
+    public int ReactToTrait(Trait trait)
+    {
+        int change = 0;
+
+        if (LikedTraits.Contains(trait))
+        {
+            change = ModifiersManager.Instance.GetModifierDataForTrait(trait).Positive;
+        }
+        else if (DislikedTraits.Contains(trait))
+        {
+            change = ModifiersManager.Instance.GetModifierDataForTrait(trait).Negative;
+        }
+
+        return change;
+    }
+
     public void DestroySelf()
     {
+        if (isBeingDestroyed)
+            return;
+
+        isBeingDestroyed = true;
         Destroy(gameObject);
     }
     
     public void OnPointerClick(PointerEventData eventData)
     {
-        GridManager.Instance.RequestAddCivilian(this);
         OnCivilianClicked?.Invoke(Index);
-        DestroySelf();
     }
 
     public void OnPointerEnter(PointerEventData eventData)

@@ -1,118 +1,81 @@
 ﻿using TMPro;
 using Unity.Netcode;
 using UnityEngine;
-
-public enum EconomyOptionType
-{
-    TakeLoan,
-    Invest
-}
+using UnityEngine.EventSystems;
 
 public class EconomyOptionUI : OptionUI
 {
-    [Header("UI")]
     [SerializeField] private TextMeshProUGUI initialValueText;
     [SerializeField] private TextMeshProUGUI multipliedValueText;
 
-    [Header("Ranges")]
-    [SerializeField] private Vector2 percentageRange = new Vector2(0.25f, 0.75f);
-    [SerializeField] private Vector2 multiplierRange = new Vector2(1.25f, 1.75f);
-
-    public NetworkVariable<int> OptionType = new((int)EconomyOptionType.TakeLoan);
-    public NetworkVariable<int> InitialValue = new(0);
-    public NetworkVariable<float> Multiplier = new(1f);
-    public NetworkVariable<int> FinalValue = new(0);
-
-    public override void OnNetworkSpawn()
-    {
-        base.OnNetworkSpawn();
-
-        InitialValue.OnValueChanged += UpdateInitialValueUI;
-        FinalValue.OnValueChanged += UpdateFinalValueUI;
-
-        UpdateInitialValueUI(InitialValue.Value, InitialValue.Value);
-        UpdateFinalValueUI(FinalValue.Value, FinalValue.Value);
-    }
-
-    public override void OnNetworkDespawn()
-    {
-        base.OnNetworkDespawn();
-
-        InitialValue.OnValueChanged -= UpdateInitialValueUI;
-        FinalValue.OnValueChanged -= UpdateFinalValueUI;
-    }
+    public EconomyOptionType OptionType;
 
     public override void Initialize()
     {
-        if (!IsServer)
-            return;
+        // 1. Link to BankManager
+        if (OptionType == EconomyOptionType.Invest) BankManager.Instance.InvestOption = this;
+        else BankManager.Instance.LoanOption = this;
 
-        int totalPoints = GameManager.Instance.TotalPoints.Value;
+        ForceReset();
 
-        EconomyOptionType randomType = Random.value < 0.5f
-            ? EconomyOptionType.TakeLoan
-            : EconomyOptionType.Invest;
+        // 2. Bind Clicks and Used State
+        var clicksVar = OptionType == EconomyOptionType.Invest ? BankManager.Instance.InvestClicks : BankManager.Instance.LoanClicks;
+        var usedVar = OptionType == EconomyOptionType.Invest ? BankManager.Instance.InvestUsed : BankManager.Instance.LoanUsed;
 
-        float percent = Random.Range(percentageRange.x, percentageRange.y);
-        int initial = Mathf.Max(1, Mathf.RoundToInt(totalPoints * percent));
+        clicksVar.OnValueChanged += (o, n) => UpdateClicksUI(n);
+        usedVar.OnValueChanged += (o, n) => UpdateUsedState(n);
 
-        float multiplier = Random.Range(multiplierRange.x, multiplierRange.y);
-        multiplier = Mathf.Round(multiplier * 100f) / 100f;
+        // 3. Bind Math Variables (Initialize scores)
+        if (OptionType == EconomyOptionType.Invest)
+            BindMath(BankManager.Instance.InvestInitial, BankManager.Instance.InvestMult, BankManager.Instance.InvestFinal);
+        else
+            BindMath(BankManager.Instance.LoanInitial, BankManager.Instance.LoanMult, BankManager.Instance.LoanFinal);
 
-        int final = Mathf.RoundToInt(initial * multiplier);
+        // Sync visuals
+        UpdateClicksUI(clicksVar.Value);
+        UpdateUsedState(usedVar.Value);
+    }
 
-        OptionType.Value = (int)randomType;
-        InitialValue.Value = initial;
-        Multiplier.Value = multiplier;
-        FinalValue.Value = final;
+    private void BindMath(NetworkVariable<int> init, NetworkVariable<float> mult, NetworkVariable<int> final)
+    {
+        init.OnValueChanged += (o, n) => RefreshEconomyUI(n, mult.Value, final.Value);
+        mult.OnValueChanged += (o, n) => RefreshEconomyUI(init.Value, n, final.Value);
+        final.OnValueChanged += (o, n) => RefreshEconomyUI(init.Value, mult.Value, n);
+        
+        RefreshEconomyUI(init.Value, mult.Value, final.Value);
+    }
 
-        Price.Value = 0;
-        CanActivate.Value = true;
-        Clicks.Value = 0;
+    public override void OnPointerClick(PointerEventData eventData)
+    {
+        if (!CanActivate || HasVotedLocally) return;
+        HasVotedLocally = true;
+        UpdateUsedState(false); // Update cover locally
+        BankManager.Instance.RegisterClickServerRpc(OptionType);
     }
 
     public override void Activate()
     {
-        if (!IsServer)
-            return;
-
-        EconomyOptionType type = (EconomyOptionType)OptionType.Value;
-
-        switch (type)
-        {
-            case EconomyOptionType.TakeLoan:
-                // Example:
-                // gain InitialValue now, repay FinalValue later
-                GameManager.Instance.TotalPoints.Value += InitialValue.Value;
-                GameManager.Instance.Debt.Value += FinalValue.Value;
-                break;
-
-            case EconomyOptionType.Invest:
-                // Example:
-                // pay InitialValue now, receive FinalValue later
-                GameManager.Instance.TotalPoints.Value -= InitialValue.Value;
-                GameManager.Instance.InvestmentReturn.Value += FinalValue.Value;
-                break;
-        }
-
         base.Activate();
+        if (NetworkManager.Singleton.IsServer) ApplyEconomyChanges();
     }
 
-    private void UpdateInitialValueUI(int oldValue, int newValue)
+    private void ApplyEconomyChanges()
     {
-        if (initialValueText != null)
-            if(OptionType.Value == (int)EconomyOptionType.TakeLoan)
-                initialValueText.text = $"Borrow {newValue}";
-            else
-                initialValueText.text = $"Invest {newValue}";
+        int init = OptionType == EconomyOptionType.Invest ? BankManager.Instance.InvestInitial.Value : BankManager.Instance.LoanInitial.Value;
+        int final = OptionType == EconomyOptionType.Invest ? BankManager.Instance.InvestFinal.Value : BankManager.Instance.LoanFinal.Value;
+
+        if (OptionType == EconomyOptionType.TakeLoan) {
+            GameManager.Instance.TotalPoints.Value += init;
+            GameManager.Instance.Debt.Value += final;
+        } else {
+            GameManager.Instance.TotalPoints.Value -= init;
+            GameManager.Instance.InvestmentReturn.Value += final;
+        }
     }
 
-    private void UpdateFinalValueUI(int oldValue, int newValue)
+    private void RefreshEconomyUI(int i, float m, int f)
     {
-        if (multipliedValueText != null)
-            if(OptionType.Value == (int)EconomyOptionType.TakeLoan)
-                multipliedValueText.text = $"Repay {newValue} (x{Multiplier.Value})";
-            else
-                multipliedValueText.text = $"Receive {newValue} (x{Multiplier.Value})";
+        initialValueText.text = OptionType == EconomyOptionType.TakeLoan ? $"Borrow {i}" : $"Invest {i}";
+        multipliedValueText.text = OptionType == EconomyOptionType.TakeLoan ? $"Repay {f} (x{m:F2})" : $"Receive {f} (x{m:F2})";
     }
 }

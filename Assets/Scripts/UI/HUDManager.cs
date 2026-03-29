@@ -6,6 +6,9 @@ public class HUDManager : MonoBehaviour
 {
     public TextMeshProUGUI TurnText;
     public TextMeshProUGUI ScoreText;
+    public TextMeshProUGUI Points;
+    public TextMeshProUGUI Investment;
+    public TextMeshProUGUI Debt;
 
     public PlayerBehaviour Player;
     

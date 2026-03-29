@@ -6,7 +6,7 @@ public class PlayerInventory : MonoBehaviour
 {
     public PlayerBehaviour PlayerBehaviour;
     public GameObject CivilianPrefab;
-    private List<InventoryCivilianBehaviour> CivilianBehaviours = new List<InventoryCivilianBehaviour>();
+    public List<InventoryCivilianBehaviour> CivilianBehaviours = new List<InventoryCivilianBehaviour>();
     
     public void Initialize(int civiliansCount)
     {
@@ -38,17 +38,27 @@ public class PlayerInventory : MonoBehaviour
         
         InventoryCivilianBehaviour selectedCivilian = CivilianBehaviours[index];
         // Handle the logic for selecting the civilian, e.g., updating UI or player stats
-        Debug.Log($"Selected Civilian with Trait: {selectedCivilian.Trait}");
-        
+        GridManager.Instance.RequestAddCivilian(selectedCivilian);
         GameManager.Instance.ChangeActivePlayer();
+        selectedCivilian.DestroySelf();
     }
 
     public void Clear()
     {
-        foreach (InventoryCivilianBehaviour c in CivilianBehaviours)
+        for (int i = CivilianBehaviours.Count - 1; i >= 0; i--)
         {
-            c.DestroySelf();
+            InventoryCivilianBehaviour civilian = CivilianBehaviours[i];
+
+            if (civilian == null)
+            {
+                CivilianBehaviours.RemoveAt(i);
+                continue;
+            }
+
+            civilian.DestroySelf();
+            CivilianBehaviours.RemoveAt(i);
         }
+        
         GameManager.Instance.OnEndWave -= Clear;
     }
 
