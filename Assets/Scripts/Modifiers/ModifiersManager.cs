@@ -8,54 +8,54 @@ public class ModifiersManager : NetworkBehaviour
 
         public NetworkList<TraitModifier> Modifiers;
 
-    [SerializeField] private AnimationCurve spawnInitialCurve = new AnimationCurve(
-        new Keyframe(0f, 10f),
-        new Keyframe(10f, 13f),
-        new Keyframe(20f, 17f),
-        new Keyframe(30f, 22f)
-    );
+        [SerializeField] private AnimationCurve spawnInitialCurve = new AnimationCurve(
+            new Keyframe(0f, 1f),
+            new Keyframe(10f, 1.5f),
+            new Keyframe(20f, 2.2f),
+            new Keyframe(30f, 3f)
+        );
 
-    [SerializeField] private AnimationCurve positiveInitialCurve = new AnimationCurve(
-        new Keyframe(0f, 1f),
-        new Keyframe(10f, 2f),
-        new Keyframe(20f, 3f),
-        new Keyframe(30f, 5f)
-    );
+        [SerializeField] private AnimationCurve positiveInitialCurve = new AnimationCurve(
+            new Keyframe(0f, 1f),
+            new Keyframe(10f, 1.4f),
+            new Keyframe(20f, 2f),
+            new Keyframe(30f, 2.8f)
+        );
 
-    [SerializeField] private AnimationCurve negativeInitialCurve = new AnimationCurve(
-        new Keyframe(0f, 1f),
-        new Keyframe(10f, 2f),
-        new Keyframe(20f, 3f),
-        new Keyframe(30f, 4f)
-    );
+        [SerializeField] private AnimationCurve negativeInitialCurve = new AnimationCurve(
+            new Keyframe(0f, 1f),
+            new Keyframe(10f, 1.3f),
+            new Keyframe(20f, 1.8f),
+            new Keyframe(30f, 2.5f)
+        );
 
-    [SerializeField] private AnimationCurve spawnChangeCurve = new AnimationCurve(
-        new Keyframe(0f, 1f),
-        new Keyframe(15f, 2f),
-        new Keyframe(30f, 3f)
-    );
+        [SerializeField] private AnimationCurve spawnChangeCurve = new AnimationCurve(
+            new Keyframe(0f, 1f),
+            new Keyframe(15f, 1.5f),
+            new Keyframe(30f, 2.2f)
+        );
 
-    [SerializeField] private AnimationCurve positiveChangeCurve = new AnimationCurve(
-        new Keyframe(0f, 1f),
-        new Keyframe(15f, 1.5f),
-        new Keyframe(30f, 2f)
-    );
+        [SerializeField] private AnimationCurve positiveChangeCurve = new AnimationCurve(
+            new Keyframe(0f, 1f),
+            new Keyframe(15f, 1.4f),
+            new Keyframe(30f, 2f)
+        );
 
-    [SerializeField] private AnimationCurve negativeChangeCurve = new AnimationCurve(
-        new Keyframe(0f, 1f),
-        new Keyframe(15f, 1.5f),
-        new Keyframe(30f, 2f)
-    );
+        [SerializeField] private AnimationCurve negativeChangeCurve = new AnimationCurve(
+            new Keyframe(0f, 1f),
+            new Keyframe(15f, 1.3f),
+            new Keyframe(30f, 1.8f)
+        );
 
-    [SerializeField] private AnimationCurve upgradePriceCurve = new AnimationCurve(
-        new Keyframe(1f, 10f),
-        new Keyframe(5f, 25f),
-        new Keyframe(10f, 55f),
-        new Keyframe(15f, 95f),
-        new Keyframe(20f, 150f),
-        new Keyframe(25f, 220f),
-        new Keyframe(30f, 300f)
-    );
+        [SerializeField] private AnimationCurve upgradePriceCurve = new AnimationCurve(
+            new Keyframe(1f, 3f),
+            new Keyframe(5f, 12f),
+            new Keyframe(10f, 30f),
+            new Keyframe(15f, 65f),
+            new Keyframe(20f, 110f),
+            new Keyframe(25f, 180f),
+            new Keyframe(30f, 270f)
+        );
 
     [Header("Random change multipliers")]
     [SerializeField] private float[] changeMultipliers = { 0.5f, 1.5f };
