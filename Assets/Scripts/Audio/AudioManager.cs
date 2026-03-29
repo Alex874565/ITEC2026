@@ -14,6 +14,8 @@ public class AudioManager : MonoBehaviour
     
     public AudioMixer Mixer;
 
+    public AudioClip menuSwitchClip;
+    
     public AudioClip currentMusic;
     
     [Header("Volumes")]
@@ -81,6 +83,11 @@ public class AudioManager : MonoBehaviour
         });
     }
 
+    public void PlayMenuChangeSFX()
+    {
+        PlaySFX(menuSwitchClip);
+    }
+
     public void SetMusicVolume(float value)
     {
         musicVolume = value;
@@ -104,6 +111,7 @@ public class AudioManager : MonoBehaviour
     {
         masterVolume = value;
         PlayerPrefs.SetFloat("MasterVolume", masterVolume);
+        PlayerPrefs.Save();
         ApplyVolumes();
     }
 
@@ -118,7 +126,7 @@ public class AudioManager : MonoBehaviour
 
     private float LinearToDb(float value)
     {
-        return Mathf.Log10(value) * 20f;
+        return value <= 0.0001f ? -80f : Mathf.Log10(value) * 20f;
     }
     
     public AudioSource GetMusicSource()

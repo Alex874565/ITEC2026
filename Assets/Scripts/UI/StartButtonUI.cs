@@ -39,7 +39,16 @@ public class StartButtonUI : NetworkBehaviour
 
         if (GameManager.Instance.PlayerCount.Value == 2)
         {
-            GameManager.Instance.StartGame();
+            //GameManager.Instance.StartGame();
+            MenuChangeClipClientRpc();
         }
+    }
+
+    [ClientRpc]
+    public void MenuChangeClipClientRpc()
+    {
+        UIManager.Instance.Lobby.SetActive(false);
+        UIManager.Instance.Tutorial.SetActive(true);
+        AudioManager.Instance.PlayMenuChangeSFX();
     }
 }

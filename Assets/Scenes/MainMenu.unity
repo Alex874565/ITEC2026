@@ -8471,6 +8471,7 @@ MonoBehaviour:
   Lobby: {fileID: 0}
   Upgrades: {fileID: 0}
   Bank: {fileID: 0}
+  Tutorial: {fileID: 0}
   startButton: {fileID: 1794751944}
   titleAnimation: {fileID: 503320797}
   bonusCountDuration: 0.8
@@ -10313,6 +10314,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1240131399412427803, guid: c065a50992563ac45acd61e4704b2a54, type: 3}
+      propertyPath: menuSwitchClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 72911edfc90e79443b8e52c9087c56b2, type: 3}
     - target: {fileID: 1729465973336657873, guid: c065a50992563ac45acd61e4704b2a54, type: 3}
       propertyPath: OutputAudioMixerGroup
       value: 

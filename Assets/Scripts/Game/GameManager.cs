@@ -150,12 +150,21 @@ public class GameManager : NetworkBehaviour
         if (!IsServer || !IsSpawned)
             return;
 
+        CloseTutorialClientRpc();
+
         if (GridManager.Instance != null)
             CurrentWave.OnValueChanged += GridManager.Instance.OnWaveStarted;
 
         GamePaused.Value = false;
         GameStarted.Value = true;
         CurrentWave.Value = 1;
+    }
+
+    [ClientRpc]
+    public void CloseTutorialClientRpc()
+    {
+        AudioManager.Instance.PlayMenuChangeSFX();
+        UIManager.Instance.Tutorial.SetActive(false);
     }
 
     [ClientRpc]

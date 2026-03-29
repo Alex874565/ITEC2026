@@ -18,6 +18,7 @@ public class EconomyUI : MonoBehaviour
     
     private void OnEnable()
     {
+        AudioManager.Instance.PlayMenuChangeSFX();
         GameManager.Instance.TotalPoints.OnValueChanged += OnTotalPointsChanged;
         GameManager.Instance.Debt.OnValueChanged += OnDebtChanged;
         GameManager.Instance.InvestmentReturn.OnValueChanged += OnInvestmentReturnChanged;

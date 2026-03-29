@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour
     public GameObject Lobby;
     public GameObject Upgrades;
     public GameObject Bank;
+    public GameObject Tutorial;
     public UIButtonVisual startButton;
     [SerializeField] private TitleAnimation titleAnimation;
     

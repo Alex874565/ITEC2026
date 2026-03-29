@@ -16,6 +16,7 @@ public class MainMenuUI : MonoBehaviour
         {
             stagger.CloseMenu(() =>
             {
+                AudioManager.Instance.PlayMenuChangeSFX();
                 SceneManager.LoadScene("SampleScene");
             });
             
