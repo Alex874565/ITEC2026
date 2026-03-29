@@ -16,7 +16,7 @@ public class MainMenuUI : MonoBehaviour
         {
             stagger.CloseMenu(() =>
             {
-                //SceneManager.LoadScene("HubScene");
+                SceneManager.LoadScene("SampleScene");
             });
             
             // Hide title simultaneously
