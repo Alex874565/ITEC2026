@@ -38,7 +38,7 @@ public class OptionsUI : MonoBehaviour
             Debug.Log("main menu");
             stagger.CloseMenu(() =>
             {
-                SceneManager.LoadScene("MainMenuScene");
+                SceneManager.LoadScene("MainMenu");
             });
         });
     }

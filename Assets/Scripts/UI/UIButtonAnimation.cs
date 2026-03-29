@@ -9,11 +9,13 @@ public class UIButtonAnimation : MonoBehaviour,
     IPointerDownHandler,
     IPointerUpHandler
 {
+    [Header("Animation Settings")]
     [SerializeField] private float hoverMultiplier = 1.08f;
     [SerializeField] private float pressMultiplier = 0.9f;
     [SerializeField] private float duration = 0.15f;
 
-    [SerializeField] private Vector3 originalScale = Vector3.one;
+    private Vector3 originalScale;
+    private bool hasCustomBaseScale = false;
 
     private Tween currentTween;
     private Button button;
@@ -22,16 +24,24 @@ public class UIButtonAnimation : MonoBehaviour,
     private void Awake()
     {
         button = GetComponent<Button>();
+    }
 
-        if (originalScale == Vector3.zero)
+    private void OnEnable()
+    {
+        // If parent DIDN'T set scale (no stagger), capture it here
+        if (!hasCustomBaseScale)
         {
-            originalScale = Vector3.one; // fallback
+            originalScale = transform.localScale;
         }
     }
 
+    /// <summary>
+    /// Called by parent (MenuStaggerAnimation)
+    /// </summary>
     public void SetBaseScale(Vector3 scale)
     {
         originalScale = scale;
+        hasCustomBaseScale = true;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -40,7 +50,6 @@ public class UIButtonAnimation : MonoBehaviour,
             return;
 
         isHovered = true;
-
         currentTween?.Kill();
 
         currentTween = transform.DOScale(originalScale * hoverMultiplier, duration)
@@ -51,7 +60,6 @@ public class UIButtonAnimation : MonoBehaviour,
     public void OnPointerExit(PointerEventData eventData)
     {
         isHovered = false;
-
         currentTween?.Kill();
 
         currentTween = transform.DOScale(originalScale, duration)
